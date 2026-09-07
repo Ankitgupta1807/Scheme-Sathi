@@ -1745,7 +1745,7 @@ const TRANSLATIONS = {
 };
 
 // ==========================================================================
-// 3. APPLICATION STATE MANAGEMENT (With LocalStorage Persistence)
+// 3. APPLICATION STATE MANAGEMENT & CITIZEN USER STORE
 // ==========================================================================
 const DEFAULT_PROFILE = {
     age: 21,
@@ -1762,6 +1762,115 @@ const DEFAULT_PROFILE = {
     hasDisability: false,
     isMinority: false
 };
+
+/**
+ * Pre-seeded JavaScript Object of Registered Citizens & Faculty Evaluation Demo Accounts
+ */
+const DEFAULT_USERS = {
+    'citizen@example.com': {
+        name: 'Aarav Sharma',
+        email: 'citizen@example.com',
+        password: 'User@123',
+        phone: '+91 98765 43210',
+        role: 'Citizen (Student)',
+        avatarColor: '#2563eb',
+        profile: {
+            age: 21,
+            gender: 'Male',
+            state: 'Maharashtra',
+            district: 'Pune',
+            areaType: 'Urban',
+            occupation: 'Student',
+            incomeBracket: '1-2.5L',
+            socialCategory: 'OBC',
+            education: 'Undergraduate',
+            landHolding: 'None',
+            businessType: 'None',
+            hasDisability: false,
+            isMinority: false
+        },
+        savedSchemeIds: ['post-matric-scholarship', 'aicte-pragati', 'skill-india'],
+        registeredAt: '2026-08-15'
+    },
+    'farmer@example.com': {
+        name: 'Rajinder Singh',
+        email: 'farmer@example.com',
+        password: 'Farmer@123',
+        phone: '+91 98123 45678',
+        role: 'Citizen (Farmer)',
+        avatarColor: '#059669',
+        profile: {
+            age: 48,
+            gender: 'Male',
+            state: 'Punjab',
+            district: 'Ludhiana',
+            areaType: 'Rural',
+            occupation: 'Farmer',
+            incomeBracket: '1-2.5L',
+            socialCategory: 'General',
+            education: '10th Pass',
+            landHolding: 'Small',
+            businessType: 'None',
+            hasDisability: false,
+            isMinority: false
+        },
+        savedSchemeIds: ['pm-kisan', 'pmfby', 'pm-kusum', 'kcc'],
+        registeredAt: '2026-08-20'
+    },
+    'admin@schemesathi.gov.in': {
+        name: 'Official Admin (Seva Kendra)',
+        email: 'admin@schemesathi.gov.in',
+        password: 'Admin@123',
+        phone: '+91 91234 56789',
+        role: 'Administrator',
+        avatarColor: '#ea580c',
+        profile: {
+            age: 35,
+            gender: 'Female',
+            state: 'Delhi',
+            district: 'New Delhi',
+            areaType: 'Urban',
+            occupation: 'Employed (Govt)',
+            incomeBracket: '5-10L',
+            socialCategory: 'General',
+            education: 'Postgraduate',
+            landHolding: 'None',
+            businessType: 'None',
+            hasDisability: false,
+            isMinority: false
+        },
+        savedSchemeIds: ['ayushman-bharat-pm-jay', 'atal-pension-yojana', 'digital-india-bhashini'],
+        registeredAt: '2026-08-01'
+    }
+};
+
+/**
+ * Retrieve the active user database from localStorage with fallback to DEFAULT_USERS object
+ */
+function getUsersDatabase() {
+    try {
+        const stored = localStorage.getItem('scheme_sathi_users_db');
+        if (stored) {
+            const parsed = JSON.parse(stored);
+            return Object.assign({}, DEFAULT_USERS, parsed);
+        }
+    } catch (e) {
+        console.error('Error loading users database:', e);
+    }
+    saveUsersDatabase(DEFAULT_USERS);
+    return Object.assign({}, DEFAULT_USERS);
+}
+
+/**
+ * Persist the active user database to localStorage
+ */
+function saveUsersDatabase(usersDb) {
+    try {
+        localStorage.setItem('scheme_sathi_users_db', JSON.stringify(usersDb));
+    } catch (e) {
+        console.error('Error persisting users database:', e);
+    }
+}
 
 const DEFAULT_ALERTS = [
     {
@@ -1810,11 +1919,15 @@ const DEFAULT_TRACKER = [
     }
 ];
 
+// Initialize current user session from localStorage if present
+const savedCurrentUser = JSON.parse(localStorage.getItem('scheme_sathi_current_user')) || null;
+
 const APP_STATE = {
     currentLanguage: localStorage.getItem('scheme_sathi_lang') || 'en',
     currentTheme: localStorage.getItem('scheme_sathi_theme') || 'light',
-    userProfile: JSON.parse(localStorage.getItem('scheme_sathi_profile')) || DEFAULT_PROFILE,
-    savedSchemeIds: JSON.parse(localStorage.getItem('scheme_sathi_saved')) || ['pm-kisan', 'post-matric-scholarship', 'ayushman-bharat-pm-jay'],
+    currentUser: savedCurrentUser,
+    userProfile: (savedCurrentUser && savedCurrentUser.profile) ? savedCurrentUser.profile : (JSON.parse(localStorage.getItem('scheme_sathi_profile')) || DEFAULT_PROFILE),
+    savedSchemeIds: JSON.parse(localStorage.getItem('scheme_sathi_saved')) || (savedCurrentUser && savedCurrentUser.savedSchemeIds ? savedCurrentUser.savedSchemeIds : ['pm-kisan', 'post-matric-scholarship', 'ayushman-bharat-pm-jay']),
     trackerApplications: JSON.parse(localStorage.getItem('scheme_sathi_applications')) || DEFAULT_TRACKER,
     notifications: JSON.parse(localStorage.getItem('scheme_sathi_notifications')) || DEFAULT_ALERTS,
     currentWizardStep: 1,
@@ -2587,9 +2700,22 @@ function toggleSaveScheme(schemeId) {
     }
 
     localStorage.setItem('scheme_sathi_saved', JSON.stringify(APP_STATE.savedSchemeIds));
+
+    // If a citizen is logged in, sync saved schemes to their user account record
+    if (APP_STATE.currentUser) {
+        APP_STATE.currentUser.savedSchemeIds = [...APP_STATE.savedSchemeIds];
+        localStorage.setItem('scheme_sathi_current_user', JSON.stringify(APP_STATE.currentUser));
+        const usersDb = getUsersDatabase();
+        if (usersDb[APP_STATE.currentUser.email]) {
+            usersDb[APP_STATE.currentUser.email].savedSchemeIds = [...APP_STATE.savedSchemeIds];
+            saveUsersDatabase(usersDb);
+        }
+    }
+
     renderSchemes();
     renderSavedSchemes();
     renderDashboard();
+    renderUserAuth();
 }
 
 // ==========================================================================
@@ -2792,6 +2918,18 @@ function handleWizardSubmit(e) {
     };
 
     localStorage.setItem('scheme_sathi_profile', JSON.stringify(APP_STATE.userProfile));
+
+    // If citizen is logged in, sync updated profile to their account in the JavaScript object store
+    if (APP_STATE.currentUser) {
+        APP_STATE.currentUser.profile = { ...APP_STATE.userProfile };
+        localStorage.setItem('scheme_sathi_current_user', JSON.stringify(APP_STATE.currentUser));
+        const usersDb = getUsersDatabase();
+        if (usersDb[APP_STATE.currentUser.email]) {
+            usersDb[APP_STATE.currentUser.email].profile = { ...APP_STATE.userProfile };
+            saveUsersDatabase(usersDb);
+        }
+        renderUserAuth();
+    }
 
     showToast('Profile updated & schemes calculated!', 'success');
     renderSchemes();
@@ -3112,11 +3250,553 @@ function escapeHtml(str) {
 }
 
 // ==========================================================================
-// 16. INITIALIZATION & DOM READY
+// 16. CITIZEN AUTHENTICATION & CLIENT-SIDE USER STORE
+// ==========================================================================
+
+/**
+ * Extract 2-letter initials from citizen full name
+ */
+function getInitials(name) {
+    if (!name) return 'U';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+/**
+ * Open Citizen Authentication Modal
+ * @param {'login'|'register'} defaultTab
+ */
+function openAuthModal(defaultTab = 'login') {
+    const backdrop = document.getElementById('authModalBackdrop');
+    if (!backdrop) return;
+    backdrop.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    switchAuthTab(defaultTab);
+    hideAuthAlert();
+}
+
+/**
+ * Close Citizen Authentication Modal
+ */
+function closeAuthModal(event) {
+    if (event && event.target !== event.currentTarget) return;
+    const backdrop = document.getElementById('authModalBackdrop');
+    if (backdrop) {
+        backdrop.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+    hideAuthAlert();
+}
+
+/**
+ * Switch between Login and Registration tabs
+ * @param {'login'|'register'} tab
+ */
+function switchAuthTab(tab) {
+    const loginTabBtn = document.getElementById('authLoginTabBtn');
+    const regTabBtn = document.getElementById('authRegisterTabBtn');
+    const loginPanel = document.getElementById('authLoginPanel');
+    const regPanel = document.getElementById('authRegisterPanel');
+
+    if (tab === 'login') {
+        if (loginTabBtn) loginTabBtn.classList.add('active');
+        if (regTabBtn) regTabBtn.classList.remove('active');
+        if (loginPanel) loginPanel.classList.add('active');
+        if (regPanel) regPanel.classList.remove('active');
+    } else {
+        if (regTabBtn) regTabBtn.classList.add('active');
+        if (loginTabBtn) loginTabBtn.classList.remove('active');
+        if (regPanel) regPanel.classList.add('active');
+        if (loginPanel) loginPanel.classList.remove('active');
+
+        // Populate registration state dropdown if not yet populated
+        const regStateSelect = document.getElementById('regState');
+        if (regStateSelect && regStateSelect.children.length <= 1) {
+            regStateSelect.innerHTML = '';
+            INDIAN_STATES.forEach(st => {
+                const opt = document.createElement('option');
+                opt.value = st;
+                opt.textContent = st;
+                if (st === 'Maharashtra') opt.selected = true;
+                regStateSelect.appendChild(opt);
+            });
+        }
+    }
+    hideAuthAlert();
+}
+
+/**
+ * Display alert banner inside Auth modal
+ */
+function showAuthAlert(message, type = 'error') {
+    const alertBox = document.getElementById('authAlertBox');
+    if (!alertBox) return;
+    alertBox.style.display = 'flex';
+    alertBox.className = `auth-alert ${type}`;
+    const icon = type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation';
+    alertBox.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${escapeHtml(message)}</span>`;
+}
+
+/**
+ * Hide alert banner inside Auth modal
+ */
+function hideAuthAlert() {
+    const alertBox = document.getElementById('authAlertBox');
+    if (alertBox) {
+        alertBox.style.display = 'none';
+        alertBox.innerHTML = '';
+    }
+}
+
+/**
+ * Toggle password reveal
+ */
+function togglePasswordVisibility(inputId, btnEl) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    const isPass = input.type === 'password';
+    input.type = isPass ? 'text' : 'password';
+    const icon = btnEl ? btnEl.querySelector('i') : null;
+    if (icon) {
+        icon.className = isPass ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+    }
+}
+
+/**
+ * Quick 1-Click Fill Demo Accounts (For Faculty Evaluation)
+ * @param {'citizen'|'farmer'|'admin'} role
+ */
+function quickFillDemo(role) {
+    const emailInput = document.getElementById('loginEmail');
+    const passInput = document.getElementById('loginPassword');
+    if (!emailInput || !passInput) return;
+
+    if (role === 'citizen') {
+        emailInput.value = 'citizen@example.com';
+        passInput.value = 'User@123';
+    } else if (role === 'farmer') {
+        emailInput.value = 'farmer@example.com';
+        passInput.value = 'Farmer@123';
+    } else if (role === 'admin') {
+        emailInput.value = 'admin@schemesathi.gov.in';
+        passInput.value = 'Admin@123';
+    }
+
+    // Instantly authenticate for seamless demonstration
+    handleLoginSubmit();
+}
+
+/**
+ * Handle Citizen Sign In
+ */
+function handleLoginSubmit(event) {
+    if (event) event.preventDefault();
+
+    const emailInput = document.getElementById('loginEmail');
+    const passInput = document.getElementById('loginPassword');
+    const rememberMe = document.getElementById('rememberMeCheckbox');
+
+    if (!emailInput || !passInput) return;
+
+    const email = emailInput.value.trim().toLowerCase();
+    const password = passInput.value;
+
+    if (!email || !password) {
+        showAuthAlert('Please enter both email address and password to sign in.');
+        return;
+    }
+
+    // 1. Check against client-side JavaScript user database
+    const usersDb = getUsersDatabase();
+    const user = usersDb[email];
+
+    if (!user) {
+        showAuthAlert(`No citizen account found for "${email}". Click "Register Citizen" to create an account, or try a 1-Click Demo account.`);
+        return;
+    }
+
+    if (user.password !== password) {
+        showAuthAlert('Incorrect password entered. Please check your password or choose a demo account.');
+        return;
+    }
+
+    // 2. Authentication successful -> update active state session
+    APP_STATE.currentUser = {
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        phone: user.phone || '',
+        avatarColor: user.avatarColor || '#2563eb',
+        profile: user.profile || { ...DEFAULT_PROFILE },
+        savedSchemeIds: user.savedSchemeIds || []
+    };
+
+    // Save session in localStorage
+    if (!rememberMe || rememberMe.checked) {
+        localStorage.setItem('scheme_sathi_current_user', JSON.stringify(APP_STATE.currentUser));
+    }
+
+    // Synchronize citizen demographic profile to matching engine
+    APP_STATE.userProfile = { ...user.profile };
+    localStorage.setItem('scheme_sathi_profile', JSON.stringify(APP_STATE.userProfile));
+
+    if (user.savedSchemeIds && user.savedSchemeIds.length > 0) {
+        APP_STATE.savedSchemeIds = [...user.savedSchemeIds];
+        localStorage.setItem('scheme_sathi_saved', JSON.stringify(APP_STATE.savedSchemeIds));
+    }
+
+    // 3. Sync wizard input controls to reflect new user's profile
+    syncWizardInputsFromProfile();
+
+    // 4. Update UI displays
+    renderUserAuth();
+    renderSchemes();
+    renderSavedSchemes();
+    renderDashboard();
+
+    // 5. Close dialog and notify
+    closeAuthModal();
+    showToast(`Welcome back, ${user.name}! Personalized schemes updated.`, 'success');
+}
+
+/**
+ * Handle Citizen Registration
+ */
+function handleRegisterSubmit(event) {
+    if (event) event.preventDefault();
+
+    const fullNameInput = document.getElementById('regFullName');
+    const emailInput = document.getElementById('regEmail');
+    const passInput = document.getElementById('regPassword');
+    const confPassInput = document.getElementById('regConfirmPassword');
+    const ageInput = document.getElementById('regAge');
+    const genderSelect = document.getElementById('regGender');
+    const stateSelect = document.getElementById('regState');
+    const distInput = document.getElementById('regDistrict');
+    const occSelect = document.getElementById('regOccupation');
+    const incSelect = document.getElementById('regIncome');
+    const catSelect = document.getElementById('regCategory');
+
+    const fullName = fullNameInput ? fullNameInput.value.trim() : '';
+    const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
+    const password = passInput ? passInput.value : '';
+    const confirmPass = confPassInput ? confPassInput.value : '';
+    const age = parseInt(ageInput ? ageInput.value : 0, 10);
+    const gender = genderSelect ? genderSelect.value : 'Male';
+    const state = stateSelect ? stateSelect.value : 'Maharashtra';
+    const district = distInput ? distInput.value.trim() : '';
+    const occupation = occSelect ? occSelect.value : 'Student';
+    const incomeBracket = incSelect ? incSelect.value : '1-2.5L';
+    const socialCategory = catSelect ? catSelect.value : 'General';
+
+    // Validation
+    if (!fullName || fullName.length < 2) {
+        showAuthAlert('Please enter your valid Full Name.');
+        return;
+    }
+    if (!email || !email.includes('@') || !email.includes('.')) {
+        showAuthAlert('Please enter a valid email address.');
+        return;
+    }
+    if (!password || password.length < 6) {
+        showAuthAlert('Password must be at least 6 characters long.');
+        return;
+    }
+    if (password !== confirmPass) {
+        showAuthAlert('Password and Confirmation do not match.');
+        return;
+    }
+    if (isNaN(age) || age < 10 || age > 100) {
+        showAuthAlert('Please enter a valid age between 10 and 100.');
+        return;
+    }
+    if (!state) {
+        showAuthAlert('Please select your home State or Union Territory.');
+        return;
+    }
+
+    // Check if email already exists in JS object / localStorage database
+    const usersDb = getUsersDatabase();
+    if (usersDb[email]) {
+        showAuthAlert(`An account with email "${email}" already exists. Please switch to Sign In.`);
+        return;
+    }
+
+    // Generate random avatar color
+    const palette = ['#2563eb', '#059669', '#7c3aed', '#d97706', '#db2777', '#0891b2'];
+    const avatarColor = palette[Math.floor(Math.random() * palette.length)];
+
+    // Create new citizen record
+    const newUser = {
+        name: fullName,
+        email: email,
+        password: password,
+        phone: '',
+        role: `Citizen (${occupation})`,
+        avatarColor: avatarColor,
+        profile: {
+            age: age,
+            gender: gender,
+            state: state,
+            district: district || 'All',
+            areaType: 'Rural',
+            occupation: occupation,
+            incomeBracket: incomeBracket,
+            socialCategory: socialCategory,
+            education: occupation === 'Student' ? 'Undergraduate' : '10th Pass',
+            landHolding: occupation === 'Farmer' ? 'Small' : 'None',
+            businessType: (occupation === 'Business Owner' || occupation === 'Self Employed') ? 'Micro' : 'None',
+            hasDisability: false,
+            isMinority: false
+        },
+        savedSchemeIds: [],
+        registeredAt: new Date().toISOString().split('T')[0]
+    };
+
+    // Store in JavaScript object database & localStorage
+    usersDb[email] = newUser;
+    saveUsersDatabase(usersDb);
+
+    // Auto sign-in new citizen
+    APP_STATE.currentUser = {
+        name: newUser.name,
+        email: newUser.email,
+        role: newUser.role,
+        phone: newUser.phone,
+        avatarColor: newUser.avatarColor,
+        profile: newUser.profile,
+        savedSchemeIds: []
+    };
+    localStorage.setItem('scheme_sathi_current_user', JSON.stringify(APP_STATE.currentUser));
+
+    // Sync profile to matching engine
+    APP_STATE.userProfile = { ...newUser.profile };
+    localStorage.setItem('scheme_sathi_profile', JSON.stringify(APP_STATE.userProfile));
+
+    // Sync wizard form inputs
+    syncWizardInputsFromProfile();
+
+    // Re-render UI
+    renderUserAuth();
+    renderSchemes();
+    renderSavedSchemes();
+    renderDashboard();
+
+    // Reset registration form
+    const regForm = document.getElementById('registerForm');
+    if (regForm) regForm.reset();
+
+    closeAuthModal();
+    showToast(`Account created! Welcome, ${newUser.name}. Showing your eligible schemes.`, 'success');
+    navigateTo('recommendations');
+}
+
+/**
+ * Handle Citizen Sign Out
+ */
+function logoutUser() {
+    closeUserProfileDropdown();
+    APP_STATE.currentUser = null;
+    localStorage.removeItem('scheme_sathi_current_user');
+
+    // Reset profile to default
+    APP_STATE.userProfile = { ...DEFAULT_PROFILE };
+    localStorage.setItem('scheme_sathi_profile', JSON.stringify(APP_STATE.userProfile));
+
+    syncWizardInputsFromProfile();
+    renderUserAuth();
+    renderSchemes();
+    renderSavedSchemes();
+    renderDashboard();
+
+    showToast('Signed out successfully. Guest mode restored.', 'info');
+}
+
+/**
+ * Toggle User Profile Dropdown
+ */
+function toggleUserProfileDropdown(event) {
+    if (event) event.stopPropagation();
+    const container = document.getElementById('userProfileMenuWrap');
+    if (container) {
+        container.classList.toggle('open');
+    }
+}
+
+/**
+ * Close User Profile Dropdown
+ */
+function closeUserProfileDropdown() {
+    const container = document.getElementById('userProfileMenuWrap');
+    if (container) {
+        container.classList.remove('open');
+    }
+}
+
+/**
+ * Sync wizard form inputs with current user profile
+ */
+function syncWizardInputsFromProfile() {
+    const prof = APP_STATE.userProfile || DEFAULT_PROFILE;
+
+    const ageInput = document.getElementById('inputAge');
+    if (ageInput) ageInput.value = prof.age || 21;
+
+    const genderRadios = document.querySelectorAll('input[name="gender"]');
+    genderRadios.forEach(r => {
+        r.checked = (r.value === prof.gender);
+    });
+
+    const occRadios = document.querySelectorAll('input[name="occupation"]');
+    occRadios.forEach(r => {
+        r.checked = (r.value === prof.occupation);
+    });
+
+    const incRadios = document.querySelectorAll('input[name="incomeBracket"]');
+    incRadios.forEach(r => {
+        r.checked = (r.value === prof.incomeBracket);
+    });
+
+    const areaRadios = document.querySelectorAll('input[name="areaType"]');
+    areaRadios.forEach(r => {
+        r.checked = (r.value === prof.areaType);
+    });
+
+    const stateSelect = document.getElementById('selectState');
+    if (stateSelect && prof.state) stateSelect.value = prof.state;
+
+    const distInput = document.getElementById('inputDistrict');
+    if (distInput) distInput.value = prof.district || '';
+
+    const socialSelect = document.getElementById('selectSocialCategory');
+    if (socialSelect && prof.socialCategory) socialSelect.value = prof.socialCategory;
+
+    const eduSelect = document.getElementById('selectEducationLevel');
+    if (eduSelect && prof.education) eduSelect.value = prof.education;
+
+    const disCheck = document.getElementById('checkDisability');
+    if (disCheck) disCheck.checked = !!prof.hasDisability;
+
+    const minCheck = document.getElementById('checkMinority');
+    if (minCheck) minCheck.checked = !!prof.isMinority;
+
+    handleOccupationChange();
+}
+
+/**
+ * Render Authentication Buttons / User Profile Dropdown in Desktop Navbar & Mobile Drawer
+ */
+function renderUserAuth() {
+    const desktopWrapper = document.getElementById('userAuthWrapper');
+    const mobileWrapper = document.getElementById('mobileAuthContainer');
+
+    const user = APP_STATE.currentUser;
+
+    if (user) {
+        // Desktop Logged In UI
+        if (desktopWrapper) {
+            desktopWrapper.innerHTML = `
+                <div class="user-profile-menu-container" id="userProfileMenuWrap">
+                    <button type="button" class="user-profile-trigger-btn" onclick="toggleUserProfileDropdown(event)" aria-haspopup="true" aria-expanded="false" title="Account Menu">
+                        <span class="user-avatar-badge" style="background-color: ${user.avatarColor || 'var(--primary-600)'}">
+                            ${escapeHtml(getInitials(user.name))}
+                        </span>
+                        <div class="user-nav-details">
+                            <span class="user-nav-name">${escapeHtml(user.name)}</span>
+                            <span class="user-nav-role">${escapeHtml(user.role || 'Citizen')}</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down user-chevron"></i>
+                    </button>
+                    <div class="user-profile-dropdown" id="userProfileDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-info">
+                                <strong>${escapeHtml(user.name)}</strong>
+                                <span class="user-email-text">${escapeHtml(user.email)}</span>
+                                <span class="user-badge-pill">${escapeHtml(user.role || 'Citizen')}</span>
+                            </div>
+                        </div>
+                        <div class="dropdown-body">
+                            <div class="dropdown-profile-summary">
+                                <div class="profile-summary-item">
+                                    <span class="lbl">State:</span>
+                                    <span class="val">${escapeHtml(user.profile?.state || 'All')}</span>
+                                </div>
+                                <div class="profile-summary-item">
+                                    <span class="lbl">Occupation:</span>
+                                    <span class="val">${escapeHtml(user.profile?.occupation || 'General')}</span>
+                                </div>
+                                <div class="profile-summary-item">
+                                    <span class="lbl">Income:</span>
+                                    <span class="val">${escapeHtml(user.profile?.incomeBracket || 'N/A')}</span>
+                                </div>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <button type="button" class="dropdown-item-btn" onclick="navigateTo('wizard'); closeUserProfileDropdown();">
+                                <i class="fa-solid fa-user-pen"></i> <span>Edit Eligibility Profile</span>
+                            </button>
+                            <button type="button" class="dropdown-item-btn" onclick="navigateTo('saved'); closeUserProfileDropdown();">
+                                <i class="fa-solid fa-bookmark"></i> <span>Saved Schemes (${APP_STATE.savedSchemeIds.length})</span>
+                            </button>
+                            <button type="button" class="dropdown-item-btn" onclick="navigateTo('tracker'); closeUserProfileDropdown();">
+                                <i class="fa-solid fa-list-check"></i> <span>My Applications (${APP_STATE.trackerApplications.length})</span>
+                            </button>
+                            <div class="dropdown-divider"></div>
+                            <button type="button" class="dropdown-item-btn text-danger" onclick="logoutUser()">
+                                <i class="fa-solid fa-arrow-right-from-bracket"></i> <span>Sign Out</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Mobile Drawer Logged In UI
+        if (mobileWrapper) {
+            mobileWrapper.innerHTML = `
+                <div class="mobile-user-card">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="user-avatar-badge" style="background-color: ${user.avatarColor || 'var(--primary-600)'}">
+                            ${escapeHtml(getInitials(user.name))}
+                        </span>
+                        <div>
+                            <div style="font-weight: 700; font-size: 0.92rem; color: var(--text-primary);">${escapeHtml(user.name)}</div>
+                            <div style="font-size: 0.75rem; color: var(--primary-600); font-weight: 600;">${escapeHtml(user.role || 'Citizen')}</div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-outline text-danger w-100 btn-sm" onclick="closeMobileDrawer(); logoutUser();">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
+                    </button>
+                </div>
+            `;
+        }
+    } else {
+        // Desktop Guest UI
+        if (desktopWrapper) {
+            desktopWrapper.innerHTML = `
+                <button type="button" class="btn btn-outline btn-auth-trigger shadow-sm" onclick="openAuthModal('login')">
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i> <span>Sign In</span>
+                </button>
+            `;
+        }
+
+        // Mobile Drawer Guest UI
+        if (mobileWrapper) {
+            mobileWrapper.innerHTML = `
+                <button type="button" class="btn btn-outline w-100" onclick="closeMobileDrawer(); openAuthModal('login');">
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In / Register
+                </button>
+            `;
+        }
+    }
+}
+
+// ==========================================================================
+// 17. INITIALIZATION & DOM READY
 // ==========================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Populate Indian States dropdown
+    // 1. Populate Indian States dropdowns (Wizard & Registration)
     const stateSelect = document.getElementById('selectState');
     if (stateSelect) {
         INDIAN_STATES.forEach(st => {
@@ -3128,39 +3808,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    const regStateSelect = document.getElementById('regState');
+    if (regStateSelect) {
+        INDIAN_STATES.forEach(st => {
+            const opt = document.createElement('option');
+            opt.value = st;
+            opt.textContent = st;
+            if (st === 'Maharashtra') opt.selected = true;
+            regStateSelect.appendChild(opt);
+        });
+    }
+
     // 2. Pre-fill Wizard Form with saved profile values
-    const ageInput = document.getElementById('inputAge');
-    if (ageInput) ageInput.value = APP_STATE.userProfile.age;
-
-    const genderRadios = document.querySelectorAll('input[name="gender"]');
-    genderRadios.forEach(r => {
-        if (r.value === APP_STATE.userProfile.gender) r.checked = true;
-    });
-
-    const occRadios = document.querySelectorAll('input[name="occupation"]');
-    occRadios.forEach(r => {
-        if (r.value === APP_STATE.userProfile.occupation) r.checked = true;
-    });
-
-    const incRadios = document.querySelectorAll('input[name="incomeBracket"]');
-    incRadios.forEach(r => {
-        if (r.value === APP_STATE.userProfile.incomeBracket) r.checked = true;
-    });
-
-    const socialSelect = document.getElementById('selectSocialCategory');
-    if (socialSelect) socialSelect.value = APP_STATE.userProfile.socialCategory;
-
-    const eduSelect = document.getElementById('selectEducationLevel');
-    if (eduSelect) eduSelect.value = APP_STATE.userProfile.education;
-
-    const disCheck = document.getElementById('checkDisability');
-    if (disCheck) disCheck.checked = APP_STATE.userProfile.hasDisability;
-
-    const minCheck = document.getElementById('checkMinority');
-    if (minCheck) minCheck.checked = APP_STATE.userProfile.isMinority;
-
-    // Handle conditional fields initially
-    handleOccupationChange();
+    syncWizardInputsFromProfile();
 
     // 3. Initialize Theme
     document.documentElement.setAttribute('data-theme', APP_STATE.currentTheme);
@@ -3177,6 +3837,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 5. Initial Renderings
+    renderUserAuth();
     renderSchemes();
     renderSavedSchemes();
     renderTracker();
@@ -3195,6 +3856,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const langMenu = document.getElementById('langMenu');
         if (langMenu && langBtn && !langMenu.contains(e.target) && !langBtn.contains(e.target)) {
             langMenu.classList.remove('open');
+        }
+
+        const profileWrap = document.getElementById('userProfileMenuWrap');
+        if (profileWrap && !profileWrap.contains(e.target)) {
+            profileWrap.classList.remove('open');
         }
     });
 

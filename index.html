@@ -121,6 +121,11 @@
                     <i class="fa-solid fa-moon" id="themeIcon"></i>
                 </button>
 
+                <!-- User Auth Profile / Login Button -->
+                <div class="user-auth-wrapper" id="userAuthWrapper">
+                    <!-- Populated dynamically via JS (Login button or User Profile Dropdown) -->
+                </div>
+
                 <!-- Primary CTA Button -->
                 <button class="btn btn-primary btn-nav-cta" onclick="startEligibilityWizard()">
                     <i class="fa-solid fa-magnifying-glass-chart"></i>
@@ -148,6 +153,7 @@
                 <a href="#about" class="mob-link" onclick="mobileNavigateTo('about')"><i class="fa-solid fa-circle-info"></i> <span data-i18n="navAbout">About Us</span></a>
             </div>
             <div class="mobile-drawer-footer">
+                <div id="mobileAuthContainer" class="mb-3"></div>
                 <button class="btn btn-primary w-100" onclick="mobileNavigateTo('wizard')">
                     <i class="fa-solid fa-wand-magic-sparkles"></i> <span data-i18n="ctaFindMyScheme">Find My Scheme</span>
                 </button>
@@ -1473,6 +1479,237 @@
                 <a href="#" target="_blank" rel="noopener" class="btn btn-primary" id="modalOfficialLinkBtn">
                     <span data-i18n="btnApplyOfficial">Apply on Official Website</span> <i class="fa-solid fa-arrow-up-right-from-square"></i>
                 </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- CITIZEN AUTHENTICATION MODAL (LOGIN & REGISTRATION) -->
+    <div class="modal-backdrop" id="authModalBackdrop" onclick="closeAuthModal(event)">
+        <div class="modal-container modal-auth glass-panel" id="authModalContainer" role="dialog" aria-modal="true" aria-labelledby="authModalHeading">
+            <div class="modal-header auth-modal-header">
+                <div class="auth-tabs-nav">
+                    <button class="auth-tab-btn active" id="authLoginTabBtn" onclick="switchAuthTab('login')">
+                        <i class="fa-solid fa-arrow-right-to-bracket"></i> <span>Sign In</span>
+                    </button>
+                    <button class="auth-tab-btn" id="authRegisterTabBtn" onclick="switchAuthTab('register')">
+                        <i class="fa-solid fa-user-plus"></i> <span>Register Citizen</span>
+                    </button>
+                </div>
+                <button class="modal-close-btn" onclick="closeAuthModal()" aria-label="Close dialog">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body auth-modal-body">
+                <!-- Alert Feedback Box -->
+                <div class="auth-alert" id="authAlertBox" style="display: none;"></div>
+
+                <!-- 1. SIGN IN PANEL -->
+                <div class="auth-panel active" id="authLoginPanel">
+                    <div class="auth-panel-heading">
+                        <h3 id="authModalHeading">Welcome Back</h3>
+                        <p>Sign in to access your saved schemes, personalized eligibility score, and application tracker.</p>
+                    </div>
+
+                    <!-- 1-Click Quick Demo Accounts (For Faculty / Evaluation) -->
+                    <div class="demo-accounts-box">
+                        <span class="demo-box-lbl"><i class="fa-solid fa-bolt"></i> Quick 1-Click Demo Accounts:</span>
+                        <div class="demo-accounts-pills">
+                            <button type="button" class="demo-pill" onclick="quickFillDemo('citizen')">
+                                🎓 <strong>Student Demo</strong> (Aarav)
+                            </button>
+                            <button type="button" class="demo-pill" onclick="quickFillDemo('farmer')">
+                                🌾 <strong>Farmer Demo</strong> (Rajinder)
+                            </button>
+                            <button type="button" class="demo-pill" onclick="quickFillDemo('admin')">
+                                🏛️ <strong>Official Admin</strong>
+                            </button>
+                        </div>
+                    </div>
+
+                    <form id="loginForm" onsubmit="handleLoginSubmit(event)" novalidate>
+                        <div class="form-group mb-3">
+                            <label for="loginEmail" class="form-label">
+                                <i class="fa-solid fa-envelope"></i> Email Address / Username <span class="req">*</span>
+                            </label>
+                            <input type="email" id="loginEmail" class="form-control" placeholder="e.g. citizen@example.com" required>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <div class="d-flex-between">
+                                <label for="loginPassword" class="form-label">
+                                    <i class="fa-solid fa-lock"></i> Password <span class="req">*</span>
+                                </label>
+                            </div>
+                            <div class="password-input-wrap">
+                                <input type="password" id="loginPassword" class="form-control" placeholder="Enter your password" required>
+                                <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('loginPassword', this)">
+                                    <i class="fa-solid fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="d-flex-between mb-4">
+                            <label class="custom-checkbox-wrap" style="font-size: 0.85rem; font-weight: 500;">
+                                <input type="checkbox" id="rememberMeCheckbox" checked>
+                                <span>Remember me on this browser</span>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 btn-lg shadow-lift" id="loginSubmitBtn">
+                            <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In to Scheme Sathi
+                        </button>
+
+                        <div class="auth-switch-text mt-3 text-center">
+                            <span>Don't have an account yet?</span>
+                            <button type="button" class="text-btn" onclick="switchAuthTab('register')">Register as a Citizen</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- 2. REGISTRATION PANEL -->
+                <div class="auth-panel" id="authRegisterPanel">
+                    <div class="auth-panel-heading">
+                        <h3>Create Citizen Account</h3>
+                        <p>Register your citizen profile once to automatically check eligibility across all central & state schemes.</p>
+                    </div>
+
+                    <form id="registerForm" onsubmit="handleRegisterSubmit(event)" novalidate>
+                        <div class="form-grid-2 mb-3">
+                            <div class="form-group">
+                                <label for="regFullName" class="form-label">
+                                    <i class="fa-solid fa-user"></i> Full Name <span class="req">*</span>
+                                </label>
+                                <input type="text" id="regFullName" class="form-control" placeholder="e.g. Priya Sharma" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="regEmail" class="form-label">
+                                    <i class="fa-solid fa-envelope"></i> Email Address <span class="req">*</span>
+                                </label>
+                                <input type="email" id="regEmail" class="form-control" placeholder="e.g. priya@example.com" required>
+                            </div>
+                        </div>
+
+                        <div class="form-grid-2 mb-3">
+                            <div class="form-group">
+                                <label for="regPassword" class="form-label">
+                                    <i class="fa-solid fa-lock"></i> Password <span class="req">*</span>
+                                </label>
+                                <div class="password-input-wrap">
+                                    <input type="password" id="regPassword" class="form-control" placeholder="Min 6 characters" minlength="6" required>
+                                    <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('regPassword', this)">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="regConfirmPassword" class="form-label">
+                                    <i class="fa-solid fa-lock-open"></i> Confirm Password <span class="req">*</span>
+                                </label>
+                                <input type="password" id="regConfirmPassword" class="form-control" placeholder="Re-enter password" required>
+                            </div>
+                        </div>
+
+                        <!-- Profile Linkage Fields -->
+                        <div class="auth-section-divider">
+                            <span>Demographic Details (Auto-Links to Scheme Discovery)</span>
+                        </div>
+
+                        <div class="form-grid-2 mb-3">
+                            <div class="form-group">
+                                <label for="regAge" class="form-label">
+                                    <i class="fa-solid fa-cake-candles"></i> Age <span class="req">*</span>
+                                </label>
+                                <input type="number" id="regAge" class="form-control" placeholder="e.g. 23" min="10" max="100" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="regGender" class="form-label">
+                                    <i class="fa-solid fa-venus-mars"></i> Gender <span class="req">*</span>
+                                </label>
+                                <select id="regGender" class="form-control" required>
+                                    <option value="Female">Female</option>
+                                    <option value="Male" selected>Male</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-grid-2 mb-3">
+                            <div class="form-group">
+                                <label for="regState" class="form-label">
+                                    <i class="fa-solid fa-map-location-dot"></i> State / UT <span class="req">*</span>
+                                </label>
+                                <select id="regState" class="form-control" required>
+                                    <!-- Populated with states -->
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="regDistrict" class="form-label">
+                                    <i class="fa-solid fa-city"></i> District / City
+                                </label>
+                                <input type="text" id="regDistrict" class="form-control" placeholder="e.g. Pune, Ludhiana">
+                            </div>
+                        </div>
+
+                        <div class="form-grid-2 mb-3">
+                            <div class="form-group">
+                                <label for="regOccupation" class="form-label">
+                                    <i class="fa-solid fa-briefcase"></i> Occupation <span class="req">*</span>
+                                </label>
+                                <select id="regOccupation" class="form-control" required>
+                                    <option value="Student" selected>🎓 Student</option>
+                                    <option value="Farmer">🌾 Farmer</option>
+                                    <option value="Job Seeker">👨‍💼 Job Seeker</option>
+                                    <option value="Business Owner">🏪 Business Owner</option>
+                                    <option value="Self Employed">🧑‍💻 Self Employed</option>
+                                    <option value="Worker">🧑‍🔧 Worker / Artisan</option>
+                                    <option value="Homemaker">🏠 Homemaker</option>
+                                    <option value="Senior Citizen">👴 Senior Citizen</option>
+                                    <option value="Other">👥 Other Citizen</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="regIncome" class="form-label">
+                                    <i class="fa-solid fa-wallet"></i> Annual Income <span class="req">*</span>
+                                </label>
+                                <select id="regIncome" class="form-control" required>
+                                    <option value="<1L">Below ₹1 Lakh (&lt; ₹1,00,000)</option>
+                                    <option value="1-2.5L" selected>₹1 – ₹2.5 Lakh</option>
+                                    <option value="2.5-5L">₹2.5 – ₹5 Lakh</option>
+                                    <option value="5-10L">₹5 – ₹10 Lakh</option>
+                                    <option value=">10L">Above ₹10 Lakh</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label for="regCategory" class="form-label">
+                                <i class="fa-solid fa-users"></i> Social Category / Reservation
+                            </label>
+                            <select id="regCategory" class="form-control">
+                                <option value="General">General / Open</option>
+                                <option value="OBC">Other Backward Classes (OBC)</option>
+                                <option value="SC">Scheduled Caste (SC)</option>
+                                <option value="ST">Scheduled Tribe (ST)</option>
+                                <option value="EWS">Economically Weaker Section (EWS)</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 btn-lg btn-sparkle" id="registerSubmitBtn">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Create Account & Discover Schemes
+                        </button>
+
+                        <div class="auth-switch-text mt-3 text-center">
+                            <span>Already have an account?</span>
+                            <button type="button" class="text-btn" onclick="switchAuthTab('login')">Sign In</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
