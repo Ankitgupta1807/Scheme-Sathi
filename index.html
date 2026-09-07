@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scheme Sathi | The Right Scheme, For The Right Person</title>
+    <meta name="description" content="Discover government schemes and benefits tailored to your age, occupation, income, and location. Free, instant, personalized scheme discovery for Indian citizens.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome 6.5.1 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Subtle Tricolor Top Stripe -->
+    <div class="tricolor-stripe" aria-hidden="true">
+        <div class="stripe saffron"></div>
+        <div class="stripe white"></div>
+        <div class="stripe green"></div>
+    </div>
+
+    <!-- Official Top Micro Bar -->
+    <div class="top-micro-bar">
+        <div class="container top-micro-content">
+            <div class="gov-badge-text">
+                <span class="emblem-dot">✦</span>
+                <span data-i18n="topBarText">Digital Public Service Initiative • Direct Citizen Scheme Discovery</span>
+            </div>
+            <div class="top-micro-links">
+                <a href="#about" class="micro-link" onclick="navigateTo('about')"><i class="fa-solid fa-shield-halved"></i> <span data-i18n="verifiedInfo">Verified Sources</span></a>
+                <a href="#faq" class="micro-link" onclick="navigateTo('faq')"><i class="fa-solid fa-circle-question"></i> <span data-i18n="helpCenter">Help & FAQs</span></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sticky Navigation Bar -->
+    <header class="navbar-wrapper" id="mainNavbar">
+        <div class="container navbar">
+            <!-- Brand Logo -->
+            <a href="#home" class="brand-logo" onclick="navigateTo('home')">
+                <div class="logo-icon-wrap">
+                    <i class="fa-solid fa-landmark-dome"></i>
+                </div>
+                <div class="brand-text-block">
+                    <span class="brand-name">Scheme<span class="highlight-saffron">Sathi</span></span>
+                    <span class="brand-motto" data-i18n="brandTagline">The Right Scheme, For The Right Person.</span>
+                </div>
+            </a>
+
+            <!-- Desktop Nav Links -->
+            <nav class="nav-links-wrap" id="navLinksWrap">
+                <a href="#home" class="nav-link active" data-nav="home" onclick="navigateTo('home')">
+                    <i class="fa-solid fa-house"></i> <span data-i18n="navHome">Home</span>
+                </a>
+                <a href="#wizard" class="nav-link" data-nav="wizard" onclick="navigateTo('wizard')">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> <span data-i18n="navFind">Find Schemes</span>
+                </a>
+                <a href="#categories" class="nav-link" data-nav="categories" onclick="navigateTo('categories')">
+                    <i class="fa-solid fa-shapes"></i> <span data-i18n="navCategories">Categories</span>
+                </a>
+                <a href="#recommendations" class="nav-link" data-nav="recommendations" onclick="navigateTo('recommendations')">
+                    <i class="fa-solid fa-sparkles"></i> <span data-i18n="navRecommended">Recommended</span>
+                </a>
+                <a href="#dashboard" class="nav-link" data-nav="dashboard" onclick="navigateTo('dashboard')">
+                    <i class="fa-solid fa-chart-pie"></i> <span data-i18n="navDashboard">Dashboard</span>
+                </a>
+                <a href="#saved" class="nav-link" data-nav="saved" onclick="navigateTo('saved')">
+                    <i class="fa-solid fa-heart"></i> <span data-i18n="navSaved">Saved</span>
+                    <span class="counter-badge" id="savedCountBadge" style="display: none;">0</span>
+                </a>
+                <a href="#tracker" class="nav-link" data-nav="tracker" onclick="navigateTo('tracker')">
+                    <i class="fa-solid fa-list-check"></i> <span data-i18n="navTracker">Tracker</span>
+                </a>
+            </nav>
+
+            <!-- Navbar Actions: Notifications, Language, Theme, CTA -->
+            <div class="nav-actions-wrap">
+                <!-- Notifications Bell -->
+                <div class="notification-dropdown-wrapper">
+                    <button class="icon-btn" id="notifBellBtn" title="Notifications" aria-label="Notifications" onclick="toggleNotificationPanel()">
+                        <i class="fa-solid fa-bell"></i>
+                        <span class="notif-badge" id="notifBadge">3</span>
+                    </button>
+
+                    <!-- Notifications Dropdown Drawer -->
+                    <div class="notification-panel" id="notifPanel">
+                        <div class="notif-header">
+                            <h4 data-i18n="notifTitle">Notifications & Alerts</h4>
+                            <button class="text-btn" id="clearNotifsBtn" onclick="markAllNotificationsRead()" data-i18n="markAllRead">Mark all read</button>
+                        </div>
+                        <div class="notif-list" id="notifList">
+                            <!-- Dynamic Notifications -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Language Switcher -->
+                <div class="lang-dropdown-wrapper">
+                    <button class="lang-selector-btn" id="langSelectorBtn" aria-label="Change Language" onclick="toggleLangMenu()">
+                        <i class="fa-solid fa-globe"></i>
+                        <span id="currentLangLabel">EN</span>
+                        <i class="fa-solid fa-chevron-down caret-icon"></i>
+                    </button>
+                    <div class="lang-menu" id="langMenu">
+                        <button class="lang-opt active" onclick="setLanguage('en')">English <span>(EN)</span></button>
+                        <button class="lang-opt" onclick="setLanguage('hi')">हिन्दी <span>(HI)</span></button>
+                        <button class="lang-opt" onclick="setLanguage('pa')">ਪੰਜਾਬੀ <span>(PA)</span></button>
+                    </div>
+                </div>
+
+                <!-- Theme Toggle Button -->
+                <button class="icon-btn theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Dark/Light Mode" aria-label="Toggle Theme">
+                    <i class="fa-solid fa-moon" id="themeIcon"></i>
+                </button>
+
+                <!-- Primary CTA Button -->
+                <button class="btn btn-primary btn-nav-cta" onclick="startEligibilityWizard()">
+                    <i class="fa-solid fa-magnifying-glass-chart"></i>
+                    <span data-i18n="ctaFindMyScheme">Find My Scheme</span>
+                </button>
+
+                <!-- Mobile Hamburger Button -->
+                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open Navigation Menu" onclick="toggleMobileMenu()">
+                    <i class="fa-solid fa-bars" id="mobileMenuIcon"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Drawer Navigation -->
+        <div class="mobile-drawer" id="mobileDrawer">
+            <div class="mobile-drawer-links">
+                <a href="#home" class="mob-link" onclick="mobileNavigateTo('home')"><i class="fa-solid fa-house"></i> <span data-i18n="navHome">Home</span></a>
+                <a href="#wizard" class="mob-link" onclick="mobileNavigateTo('wizard')"><i class="fa-solid fa-wand-magic-sparkles"></i> <span data-i18n="navFind">Find Schemes</span></a>
+                <a href="#categories" class="mob-link" onclick="mobileNavigateTo('categories')"><i class="fa-solid fa-shapes"></i> <span data-i18n="navCategories">Categories</span></a>
+                <a href="#recommendations" class="mob-link" onclick="mobileNavigateTo('recommendations')"><i class="fa-solid fa-sparkles"></i> <span data-i18n="navRecommended">Recommended</span></a>
+                <a href="#dashboard" class="mob-link" onclick="mobileNavigateTo('dashboard')"><i class="fa-solid fa-chart-pie"></i> <span data-i18n="navDashboard">Dashboard</span></a>
+                <a href="#saved" class="mob-link" onclick="mobileNavigateTo('saved')"><i class="fa-solid fa-heart"></i> <span data-i18n="navSaved">Saved Schemes</span></a>
+                <a href="#tracker" class="mob-link" onclick="mobileNavigateTo('tracker')"><i class="fa-solid fa-list-check"></i> <span data-i18n="navTracker">Application Tracker</span></a>
+                <a href="#faq" class="mob-link" onclick="mobileNavigateTo('faq')"><i class="fa-solid fa-circle-question"></i> <span data-i18n="helpCenter">FAQ</span></a>
+                <a href="#about" class="mob-link" onclick="mobileNavigateTo('about')"><i class="fa-solid fa-circle-info"></i> <span data-i18n="navAbout">About Us</span></a>
+            </div>
+            <div class="mobile-drawer-footer">
+                <button class="btn btn-primary w-100" onclick="mobileNavigateTo('wizard')">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> <span data-i18n="ctaFindMyScheme">Find My Scheme</span>
+                </button>
+            </div>
+        </div>
+        <div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileMenu()"></div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="app-main-content">
+
+        <!-- SECTION 1: HERO SECTION -->
+        <section class="hero-section spa-section" id="homeSection">
+            <div class="hero-ambient-glow glow-1"></div>
+            <div class="hero-ambient-glow glow-2"></div>
+            
+            <div class="container hero-container">
+                <!-- Left Hero Content -->
+                <div class="hero-left-content">
+                    <div class="hero-badge">
+                        <span class="badge-sparkle">✦</span>
+                        <span data-i18n="heroBadge">India's Scheme Discovery Assistant</span>
+                    </div>
+
+                    <h1 class="hero-title">
+                        <span data-i18n="heroTitle1">Find Government Schemes</span><br>
+                        <span class="accent-gradient" data-i18n="heroTitle2">Made For You.</span>
+                    </h1>
+
+                    <p class="hero-description" data-i18n="heroDesc">
+                        Discover government schemes and benefits based on your age, occupation, income, location and personal needs. Fast, intelligent, and completely free.
+                    </p>
+
+                    <div class="hero-cta-buttons">
+                        <button class="btn btn-primary btn-lg shadow-lift" onclick="startEligibilityWizard()">
+                            <span data-i18n="heroBtnFind">Find My Schemes</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                        <button class="btn btn-secondary btn-lg" onclick="navigateTo('categories')">
+                            <i class="fa-solid fa-shapes"></i>
+                            <span data-i18n="heroBtnExplore">Explore Categories</span>
+                        </button>
+                    </div>
+
+                    <!-- Trust Checkpoints -->
+                    <div class="hero-checkpoints">
+                        <div class="checkpoint-item">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span data-i18n="checkPoint1">Personalized recommendations</span>
+                        </div>
+                        <div class="checkpoint-item">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span data-i18n="checkPoint2">Simple eligibility checking</span>
+                        </div>
+                        <div class="checkpoint-item">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span data-i18n="checkPoint3">Multiple categories</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Hero Visual with Floating Dashboard Cards -->
+                <div class="hero-right-visual">
+                    <div class="visual-card-stage">
+                        <!-- Main Hero Showcase Card -->
+                        <div class="showcase-main-card glass-panel">
+                            <div class="showcase-header">
+                                <div class="badge-tag live-badge">
+                                    <span class="pulsing-dot"></span> <span data-i18n="liveMatchTag">Live Match Engine</span>
+                                </div>
+                                <span class="scheme-count-tag" id="heroTotalCountTag">28 Schemes</span>
+                            </div>
+
+                            <div class="showcase-body">
+                                <div class="score-ring-wrap">
+                                    <div class="score-gauge">
+                                        <svg viewBox="0 0 100 100" class="gauge-svg">
+                                            <circle cx="50" cy="50" r="42" class="gauge-track"></circle>
+                                            <circle cx="50" cy="50" r="42" class="gauge-progress"></circle>
+                                        </svg>
+                                        <div class="gauge-number">
+                                            <span class="val">94%</span>
+                                            <span class="lbl" data-i18n="scoreMatchLbl">Match</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="showcase-info">
+                                    <span class="match-rating-badge excellent" data-i18n="excellentMatch">Excellent Match</span>
+                                    <h3 class="matched-scheme-title">PM-KISAN Samman Nidhi</h3>
+                                    <p class="matched-scheme-benefit">₹6,000 / year direct benefit</p>
+                                    <div class="matched-reasons">
+                                        <span><i class="fa-solid fa-check"></i> Farmer category</span>
+                                        <span><i class="fa-solid fa-check"></i> Income compliant</span>
+                                        <span><i class="fa-solid fa-check"></i> All states eligible</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="showcase-footer">
+                                <button class="btn btn-sm btn-outline-primary w-100" onclick="startEligibilityWizard()">
+                                    <i class="fa-solid fa-sliders"></i> <span data-i18n="checkOwnScore">Calculate Your Score</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Floating Micro Card 1: Student -->
+                        <div class="floating-bubble-card bubble-1 float-anim-1">
+                            <div class="bubble-icon student-icon">🎓</div>
+                            <div class="bubble-text">
+                                <strong>Student</strong>
+                                <span>12 schemes matched</span>
+                            </div>
+                        </div>
+
+                        <!-- Floating Micro Card 2: Farmer -->
+                        <div class="floating-bubble-card bubble-2 float-anim-2">
+                            <div class="bubble-icon farmer-icon">🌾</div>
+                            <div class="bubble-text">
+                                <strong>Farmer</strong>
+                                <span>8 schemes matched</span>
+                            </div>
+                        </div>
+
+                        <!-- Floating Micro Card 3: Business -->
+                        <div class="floating-bubble-card bubble-3 float-anim-3">
+                            <div class="bubble-icon business-icon">💼</div>
+                            <div class="bubble-text">
+                                <strong>Business</strong>
+                                <span>6 schemes matched</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TRUST & STATISTICS STRIP -->
+        <section class="stats-strip-section">
+            <div class="container stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">25+</div>
+                    <div class="stat-label" data-i18n="statSchemes">Government Schemes</div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-card">
+                    <div class="stat-number">10+</div>
+                    <div class="stat-label" data-i18n="statCategories">Beneficiary Categories</div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-card">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label" data-i18n="statFree">Free & Open Access</div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-card">
+                    <div class="stat-number">Smart</div>
+                    <div class="stat-label" data-i18n="statPersonalized">Personalized Recommendations</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- HOW IT WORKS SECTION -->
+        <section class="how-it-works-section" id="howItWorksSection">
+            <div class="container">
+                <div class="section-header text-center">
+                    <div class="section-subtitle-tag" data-i18n="howItWorksTag">Fast & Transparent Process</div>
+                    <h2 class="section-title" data-i18n="howItWorksTitle">Find the Right Scheme in 4 Simple Steps</h2>
+                    <p class="section-desc" data-i18n="howItWorksDesc">Our intelligent discovery system matches your verified profile with official eligibility guidelines in seconds.</p>
+                </div>
+
+                <div class="steps-grid">
+                    <!-- Step 01 -->
+                    <div class="step-card">
+                        <div class="step-card-num">01</div>
+                        <div class="step-icon-wrap">
+                            <i class="fa-solid fa-user-pen"></i>
+                        </div>
+                        <h3 class="step-title" data-i18n="step1Title">Tell Us About Yourself</h3>
+                        <p class="step-desc" data-i18n="step1Desc">Share your age, state, occupation, and basic household details in a quick 1-minute guided form.</p>
+                    </div>
+
+                    <!-- Step 02 -->
+                    <div class="step-card">
+                        <div class="step-card-num">02</div>
+                        <div class="step-icon-wrap">
+                            <i class="fa-solid fa-filter-circle-dollar"></i>
+                        </div>
+                        <h3 class="step-title" data-i18n="step2Title">Check Your Eligibility</h3>
+                        <p class="step-desc" data-i18n="step2Desc">Our smart algorithm evaluates criteria across central ministries and state government portals.</p>
+                    </div>
+
+                    <!-- Step 03 -->
+                    <div class="step-card">
+                        <div class="step-card-num">03</div>
+                        <div class="step-icon-wrap">
+                            <i class="fa-solid fa-bullseye"></i>
+                        </div>
+                        <h3 class="step-title" data-i18n="step3Title">Get Personalized Matches</h3>
+                        <p class="step-desc" data-i18n="step3Desc">Review ranked scheme cards with match percentages, exact benefits, and eligibility explanations.</p>
+                    </div>
+
+                    <!-- Step 04 -->
+                    <div class="step-card">
+                        <div class="step-card-num">04</div>
+                        <div class="step-icon-wrap">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </div>
+                        <h3 class="step-title" data-i18n="step4Title">Apply Through Official Source</h3>
+                        <p class="step-desc" data-i18n="step4Desc">Use our document checklist, prepare requirements, and navigate directly to official government portals.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: ELIGIBILITY WIZARD ("Find My Scheme") -->
+        <section class="wizard-section spa-section" id="wizardSection">
+            <div class="container">
+                <div class="wizard-card-wrapper glass-panel">
+                    
+                    <!-- Wizard Header -->
+                    <div class="wizard-header">
+                        <div class="wizard-top-meta">
+                            <div class="wizard-tag">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                <span data-i18n="wizardBadge">Smart Eligibility Checker</span>
+                            </div>
+                            <div class="wizard-step-counter" id="wizardStepIndicator">Step 1 of 5</div>
+                        </div>
+
+                        <h2 class="wizard-title" id="wizardStepTitle">Tell us about yourself</h2>
+                        <p class="wizard-subtitle" id="wizardStepSubtitle">Enter basic personal demographic details to begin filtering schemes.</p>
+
+                        <!-- Progress Bar -->
+                        <div class="wizard-progress-track">
+                            <div class="wizard-progress-bar" id="wizardProgressBar" style="width: 20%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Form Wizard Body -->
+                    <form id="schemeWizardForm" onsubmit="handleWizardSubmit(event)" novalidate>
+                        
+                        <!-- STEP 1: Personal (Age & Gender) -->
+                        <div class="wizard-step-panel active" id="wizardStep1">
+                            <div class="form-grid-2">
+                                <div class="form-group">
+                                    <label for="inputAge" class="form-label">
+                                        <i class="fa-solid fa-cake-candles"></i> <span data-i18n="labelAge">Your Age</span> <span class="req">*</span>
+                                    </label>
+                                    <div class="input-with-icon">
+                                        <input type="number" id="inputAge" class="form-control" placeholder="e.g. 21" min="10" max="100" required>
+                                    </div>
+                                    <small class="form-hint" data-i18n="hintAge">Enter your current age (between 10 and 100).</small>
+                                    <div class="invalid-feedback" id="ageError">Please enter a valid age between 10 and 100.</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <i class="fa-solid fa-venus-mars"></i> <span data-i18n="labelGender">Gender</span> <span class="req">*</span>
+                                    </label>
+                                    <div class="gender-radio-group">
+                                        <label class="gender-pill">
+                                            <input type="radio" name="gender" value="Male" checked>
+                                            <span class="pill-content"><i class="fa-solid fa-mars"></i> Male</span>
+                                        </label>
+                                        <label class="gender-pill">
+                                            <input type="radio" name="gender" value="Female">
+                                            <span class="pill-content"><i class="fa-solid fa-venus"></i> Female</span>
+                                        </label>
+                                        <label class="gender-pill">
+                                            <input type="radio" name="gender" value="Other">
+                                            <span class="pill-content"><i class="fa-solid fa-genderless"></i> Other</span>
+                                        </label>
+                                    </div>
+                                    <small class="form-hint" data-i18n="hintGender">Some schemes are specially reserved for female or transgender citizens.</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- STEP 2: Location (State & District) -->
+                        <div class="wizard-step-panel" id="wizardStep2">
+                            <div class="form-grid-2">
+                                <div class="form-group">
+                                    <label for="selectState" class="form-label">
+                                        <i class="fa-solid fa-map-location-dot"></i> <span data-i18n="labelState">State / Union Territory</span> <span class="req">*</span>
+                                    </label>
+                                    <select id="selectState" class="form-control" required onchange="handleStateChange()">
+                                        <option value="">-- Select Your State --</option>
+                                    </select>
+                                    <small class="form-hint" data-i18n="hintState">Select your state of domicile/residence.</small>
+                                    <div class="invalid-feedback" id="stateError">Please select your state.</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="inputDistrict" class="form-label">
+                                        <i class="fa-solid fa-city"></i> <span data-i18n="labelDistrict">District / City</span>
+                                    </label>
+                                    <input type="text" id="inputDistrict" class="form-control" placeholder="e.g. Pune, Ludhiana, Lucknow">
+                                    <small class="form-hint" data-i18n="hintDistrict">District helps find localized district-level benefits.</small>
+                                </div>
+                            </div>
+
+                            <div class="form-group mt-3">
+                                <label class="form-label">
+                                    <i class="fa-solid fa-tree"></i> <span data-i18n="labelAreaType">Area of Residence</span>
+                                </label>
+                                <div class="gender-radio-group">
+                                    <label class="gender-pill">
+                                        <input type="radio" name="areaType" value="Rural" checked>
+                                        <span class="pill-content"><i class="fa-solid fa-wheat-awn"></i> Rural</span>
+                                    </label>
+                                    <label class="gender-pill">
+                                        <input type="radio" name="areaType" value="Urban">
+                                        <span class="pill-content"><i class="fa-solid fa-building"></i> Urban</span>
+                                    </label>
+                                    <label class="gender-pill">
+                                        <input type="radio" name="areaType" value="Semi-Urban">
+                                        <span class="pill-content"><i class="fa-solid fa-shop"></i> Semi-Urban</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- STEP 3: Occupation -->
+                        <div class="wizard-step-panel" id="wizardStep3">
+                            <label class="form-label mb-2">
+                                <i class="fa-solid fa-briefcase"></i> <span data-i18n="labelOccupation">What best describes your current occupation?</span> <span class="req">*</span>
+                            </label>
+                            
+                            <div class="occupation-cards-grid">
+                                <label class="occ-card">
+                                    <input type="radio" name="occupation" value="Student" checked onchange="handleOccupationChange()">
+                                    <div class="occ-content">
+                                        <span class="occ-emoji">🎓</span>
+                                        <div class="occ-title" data-i18n="occStudent">Student</div>
+                                        <div class="occ-desc">School, College, University or Vocational studies</div>
+                                    </div>
+                                </label>
+
+                                <label class="occ-card">
+                                    <input type="radio" name="occupation" value="Farmer" onchange="handleOccupationChange()">
+                                    <div class="occ-content">
+                                        <span class="occ-emoji">🌾</span>
+                                        <div class="occ-title" data-i18n="occFarmer">Farmer</div>
+                                        <div class="occ-desc">Cultivators, agricultural workers, dairy, allied</div>
+                                    </div>
+                                </label>
+
+                                <label class="occ-card">
+                                    <input type="radio" name="occupation" value="Job Seeker" onchange="handleOccupationChange()">
+                                    <div class="occ-content">
+                                        <span class="occ-emoji">👨‍💼</span>
+                                        <div class="occ-title" data-i18n="occJobSeeker">Job Seeker</div>
+                                        <div class="occ-desc">Actively seeking formal or informal employment</div>
+                                    </div>
+                                </label>
+
+                                <label class="occ-card">
+                                    <input type="radio" name="occupation" value="Business Owner" onchange="handleOccupationChange()">
+                                    <div class="occ-content">
+                                        <span class="occ-emoji">🏪</span>
+                                        <div class="occ-title" data-i18n="occBusiness">Business Owner</div>
+                                        <div class="occ-desc">Micro, Small or Medium enterprises & startups</div>
+                                    </div>
+                                </label>
+
+                                <label class="occ-card">
+                                    <input type="radio" name="occupation" value="Self Employed" onchange="handleOccupationChange()">
+                                    <div class="occ-content">
+                                        <span class="occ-emoji">🧑‍💻</span>
+                                        <div class="occ-title" data-i18n="occSelfEmployed">Self Employed</div>
+                                        <div class="occ-desc">Freelancers, consultants, professionals, drivers</div>
+                                    </div>
+                                </label>
+
+                                <label class="occ-card">
+                                    <input type="radio" name="occupation" value="Worker" onchange="handleOccupationChange()">
+                                    <div class="occ-content">
+                                        <span class="occ-emoji">🧑‍🔧</span>
+                                        <div class="occ-title" data-i18n="occWorker">Worker / Artisan</div>
+                                        <div class="occ-desc">Craftspeople, daily wage, factory, street vendors</div>
+                                    </div>
+                                </label>
+
+                                <label class="occ-card">
+                                    <input type="radio" name="occupation" value="Homemaker" onchange="handleOccupationChange()">
+                                    <div class="occ-content">
+                                        <span class="occ-emoji">🏠</span>
+                                        <div class="occ-title" data-i18n="occHomemaker">Homemaker</div>
+                                        <div class="occ-desc">Managing home, women care, domestic support</div>
+                                    </div>
+                                </label>
+
+                                <label class="occ-card">
+                                    <input type="radio" name="occupation" value="Senior Citizen" onchange="handleOccupationChange()">
+                                    <div class="occ-content">
+                                        <span class="occ-emoji">👴</span>
+                                        <div class="occ-title" data-i18n="occSenior">Senior Citizen</div>
+                                        <div class="occ-desc">Aged 60+ years, retired or elderly citizens</div>
+                                    </div>
+                                </label>
+
+                                <label class="occ-card">
+                                    <input type="radio" name="occupation" value="Other" onchange="handleOccupationChange()">
+                                    <div class="occ-content">
+                                        <span class="occ-emoji">👥</span>
+                                        <div class="occ-title" data-i18n="occOther">Other Citizen</div>
+                                        <div class="occ-desc">General citizens seeking welfare programs</div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- STEP 4: Financial Information -->
+                        <div class="wizard-step-panel" id="wizardStep4">
+                            <div class="form-group mb-4">
+                                <label class="form-label">
+                                    <i class="fa-solid fa-indian-rupee-sign"></i> <span data-i18n="labelIncome">Annual Family Income</span> <span class="req">*</span>
+                                </label>
+                                <div class="income-options-grid">
+                                    <label class="income-pill">
+                                        <input type="radio" name="incomeBracket" value="<1L" checked>
+                                        <div class="pill-inner">
+                                            <span class="income-badge">Low / BPL</span>
+                                            <strong>Below ₹1 Lakh</strong>
+                                            <small>&lt; ₹1,00,000 / year</small>
+                                        </div>
+                                    </label>
+
+                                    <label class="income-pill">
+                                        <input type="radio" name="incomeBracket" value="1-2.5L">
+                                        <div class="pill-inner">
+                                            <span class="income-badge">Lower Middle</span>
+                                            <strong>₹1 – ₹2.5 Lakh</strong>
+                                            <small>Eligible for most scholarships</small>
+                                        </div>
+                                    </label>
+
+                                    <label class="income-pill">
+                                        <input type="radio" name="incomeBracket" value="2.5-5L">
+                                        <div class="pill-inner">
+                                            <span class="income-badge">Middle</span>
+                                            <strong>₹2.5 – ₹5 Lakh</strong>
+                                            <small>Qualifies for credit & subsidies</small>
+                                        </div>
+                                    </label>
+
+                                    <label class="income-pill">
+                                        <input type="radio" name="incomeBracket" value="5-10L">
+                                        <div class="pill-inner">
+                                            <span class="income-badge">Upper Middle</span>
+                                            <strong>₹5 – ₹10 Lakh</strong>
+                                            <small>MSME & housing loans</small>
+                                        </div>
+                                    </label>
+
+                                    <label class="income-pill">
+                                        <input type="radio" name="incomeBracket" value=">10L">
+                                        <div class="pill-inner">
+                                            <span class="income-badge">Higher</span>
+                                            <strong>Above ₹10 Lakh</strong>
+                                            <small>&gt; ₹10,00,000 / year</small>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="selectSocialCategory" class="form-label">
+                                    <i class="fa-solid fa-users"></i> <span data-i18n="labelSocialCategory">Social Category / Reservation</span>
+                                </label>
+                                <select id="selectSocialCategory" class="form-control">
+                                    <option value="General">General / Open</option>
+                                    <option value="OBC">Other Backward Classes (OBC)</option>
+                                    <option value="SC">Scheduled Caste (SC)</option>
+                                    <option value="ST">Scheduled Tribe (ST)</option>
+                                    <option value="EWS">Economically Weaker Section (EWS)</option>
+                                </select>
+                                <small class="form-hint" data-i18n="hintSocialCategory">Certain affirmative action schemes are reserved for specific social categories.</small>
+                            </div>
+                        </div>
+
+                        <!-- STEP 5: Additional Conditional Information -->
+                        <div class="wizard-step-panel" id="wizardStep5">
+                            
+                            <!-- Conditional: Student Education Level -->
+                            <div class="form-group conditional-block" id="condStudentGroup">
+                                <label for="selectEducationLevel" class="form-label">
+                                    <i class="fa-solid fa-graduation-cap"></i> <span data-i18n="labelEducationLevel">Current Education Level</span>
+                                </label>
+                                <select id="selectEducationLevel" class="form-control">
+                                    <option value="School 10th/12th">School (Class 9th, 10th, 11th, or 12th)</option>
+                                    <option value="Diploma/ITI">Diploma / ITI / Polytechnic</option>
+                                    <option value="Undergraduate" selected>Undergraduate (B.Tech, B.Sc, B.Com, BA, etc.)</option>
+                                    <option value="Postgraduate">Postgraduate (M.Tech, M.Sc, MBA, MA, etc.)</option>
+                                    <option value="PhD">PhD / Doctoral / Research Scholar</option>
+                                </select>
+                                <small class="form-hint">Used for matching post-matric scholarships and educational grants.</small>
+                            </div>
+
+                            <!-- Conditional: Farmer Landholding -->
+                            <div class="form-group conditional-block" id="condFarmerGroup" style="display: none;">
+                                <label for="selectLandHolding" class="form-label">
+                                    <i class="fa-solid fa-tractor"></i> <span data-i18n="labelLandHolding">Land Ownership / Holding Size</span>
+                                </label>
+                                <select id="selectLandHolding" class="form-control">
+                                    <option value="Marginal">Marginal Farmer (Less than 1 Hectare / 2.5 Acres)</option>
+                                    <option value="Small" selected>Small Farmer (1 to 2 Hectares / 2.5 to 5 Acres)</option>
+                                    <option value="Medium">Medium / Large Farmer (More than 2 Hectares)</option>
+                                    <option value="Landless">Landless / Tenant Farmer / Sharecropper</option>
+                                </select>
+                                <small class="form-hint">Determines eligibility for PM-KISAN, crop insurance, and subsidized farm equipment.</small>
+                            </div>
+
+                            <!-- Conditional: Business Owner Enterprise Stage -->
+                            <div class="form-group conditional-block" id="condBusinessGroup" style="display: none;">
+                                <label for="selectBusinessType" class="form-label">
+                                    <i class="fa-solid fa-store"></i> <span data-i18n="labelBusinessType">Business Type / Scale</span>
+                                </label>
+                                <select id="selectBusinessType" class="form-control">
+                                    <option value="Micro">Micro Enterprise / Nano Venture (Investment &lt; ₹1 Cr)</option>
+                                    <option value="Small">Small Enterprise (Investment &lt; ₹10 Cr)</option>
+                                    <option value="Medium">Medium Enterprise (Investment &lt; ₹50 Cr)</option>
+                                    <option value="Vendor">Street Vendor / Hawkers / Artisan Unit</option>
+                                    <option value="Aspiring">Aspiring Entrepreneur / New Business Idea</option>
+                                </select>
+                                <small class="form-hint">Matches MUDRA loans, PMEGP, PM SVANidhi, and Stand-Up India schemes.</small>
+                            </div>
+
+                            <!-- Common Special Criteria: Disability & Minority -->
+                            <div class="form-grid-2 mt-4">
+                                <div class="checkbox-card">
+                                    <label class="custom-checkbox-wrap">
+                                        <input type="checkbox" id="checkDisability">
+                                        <span class="custom-checkmark"></span>
+                                        <div class="checkbox-text">
+                                            <strong>Person with Disability (Divyangjan)</strong>
+                                            <span>40% or more benchmark disability (UDID holder)</span>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <div class="checkbox-card">
+                                    <label class="custom-checkbox-wrap">
+                                        <input type="checkbox" id="checkMinority">
+                                        <span class="custom-checkmark"></span>
+                                        <div class="checkbox-text">
+                                            <strong>Minority Community</strong>
+                                            <span>Muslim, Christian, Sikh, Buddhist, Jain, Parsi</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Wizard Footer Buttons -->
+                        <div class="wizard-footer-nav">
+                            <button type="button" class="btn btn-secondary" id="wizardPrevBtn" onclick="navigateWizard(-1)" style="display: none;">
+                                <i class="fa-solid fa-arrow-left"></i> <span data-i18n="btnBack">Back</span>
+                            </button>
+
+                            <button type="button" class="btn btn-primary ml-auto" id="wizardNextBtn" onclick="navigateWizard(1)">
+                                <span data-i18n="btnContinue">Continue</span> <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+
+                            <button type="submit" class="btn btn-primary btn-sparkle ml-auto" id="wizardSubmitBtn" style="display: none;">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> <span data-i18n="btnFindSchemes">Find My Schemes ✨</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: CATEGORIES -->
+        <section class="categories-section spa-section" id="categoriesSection">
+            <div class="container">
+                <div class="section-header text-center">
+                    <div class="section-subtitle-tag" data-i18n="categoriesTag">Browse by Focus Area</div>
+                    <h2 class="section-title" data-i18n="categoriesTitle">Explore Schemes By Category</h2>
+                    <p class="section-desc" data-i18n="categoriesDesc">Find support designed for different needs, occupations, and stages of life.</p>
+                </div>
+
+                <div class="categories-grid" id="categoriesContainer">
+                    <div class="category-card" onclick="filterByCategory('Education')">
+                        <div class="cat-icon-box cat-edu">🎓</div>
+                        <h3 class="cat-title" data-i18n="catEducation">Education</h3>
+                        <p class="cat-desc">Scholarships, fee waivers, fellowships, and educational loans.</p>
+                        <div class="cat-footer">
+                            <span class="cat-count">5 Schemes</span>
+                            <span class="cat-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                    </div>
+
+                    <div class="category-card" onclick="filterByCategory('Agriculture')">
+                        <div class="cat-icon-box cat-agri">🌾</div>
+                        <h3 class="cat-title" data-i18n="catAgriculture">Agriculture</h3>
+                        <p class="cat-desc">Direct income support, crop insurance, solar pumps, and credit.</p>
+                        <div class="cat-footer">
+                            <span class="cat-count">5 Schemes</span>
+                            <span class="cat-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                    </div>
+
+                    <div class="category-card" onclick="filterByCategory('Women & Child')">
+                        <div class="cat-icon-box cat-women">👩</div>
+                        <h3 class="cat-title" data-i18n="catWomen">Women & Child</h3>
+                        <p class="cat-desc">Girl child savings, maternity aid, free LPG, and self-help groups.</p>
+                        <div class="cat-footer">
+                            <span class="cat-count">4 Schemes</span>
+                            <span class="cat-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                    </div>
+
+                    <div class="category-card" onclick="filterByCategory('Employment')">
+                        <div class="cat-icon-box cat-emp">💼</div>
+                        <h3 class="cat-title" data-i18n="catEmployment">Employment</h3>
+                        <p class="cat-desc">Apprenticeship programs, vendor loans, and livelihoods.</p>
+                        <div class="cat-footer">
+                            <span class="cat-count">3 Schemes</span>
+                            <span class="cat-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                    </div>
+
+                    <div class="category-card" onclick="filterByCategory('Business')">
+                        <div class="cat-icon-box cat-biz">🏪</div>
+                        <h3 class="cat-title" data-i18n="catBusiness">Business & MSME</h3>
+                        <p class="cat-desc">MUDRA loans, Stand-Up India, and PMEGP capital subsidies.</p>
+                        <div class="cat-footer">
+                            <span class="cat-count">3 Schemes</span>
+                            <span class="cat-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                    </div>
+
+                    <div class="category-card" onclick="filterByCategory('Senior Citizens')">
+                        <div class="cat-icon-box cat-senior">👴</div>
+                        <h3 class="cat-title" data-i18n="catSenior">Senior Citizens</h3>
+                        <p class="cat-desc">Old age pensions, social security, and assisted living devices.</p>
+                        <div class="cat-footer">
+                            <span class="cat-count">3 Schemes</span>
+                            <span class="cat-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                    </div>
+
+                    <div class="category-card" onclick="filterByCategory('Housing')">
+                        <div class="cat-icon-box cat-house">🏠</div>
+                        <h3 class="cat-title" data-i18n="catHousing">Housing</h3>
+                        <p class="cat-desc">Affordable housing subsidies for rural and urban low-income families.</p>
+                        <div class="cat-footer">
+                            <span class="cat-count">2 Schemes</span>
+                            <span class="cat-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                    </div>
+
+                    <div class="category-card" onclick="filterByCategory('Healthcare')">
+                        <div class="cat-icon-box cat-health">🏥</div>
+                        <h3 class="cat-title" data-i18n="catHealthcare">Healthcare</h3>
+                        <p class="cat-desc">Ayushman Bharat free hospital coverage & wellness benefits.</p>
+                        <div class="cat-footer">
+                            <span class="cat-count">1 Scheme</span>
+                            <span class="cat-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                    </div>
+
+                    <div class="category-card" onclick="filterByCategory('Disability Support')">
+                        <div class="cat-icon-box cat-disability">♿</div>
+                        <h3 class="cat-title" data-i18n="catDisability">Disability Support</h3>
+                        <p class="cat-desc">Assistive appliances, motorized trikes, and concessional loans.</p>
+                        <div class="cat-footer">
+                            <span class="cat-count">2 Schemes</span>
+                            <span class="cat-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                    </div>
+
+                    <div class="category-card" onclick="filterByCategory('Skill Development')">
+                        <div class="cat-icon-box cat-skill">🛠️</div>
+                        <h3 class="cat-title" data-i18n="catSkill">Skill Development</h3>
+                        <p class="cat-desc">PM Vishwakarma toolkits, PMKVY certifications & training stipends.</p>
+                        <div class="cat-footer">
+                            <span class="cat-count">2 Schemes</span>
+                            <span class="cat-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: RECOMMENDED SCHEMES / RESULTS -->
+        <section class="recommendations-section spa-section" id="recommendationsSection">
+            <div class="container">
+                
+                <!-- Active Profile Summary Strip -->
+                <div class="profile-summary-card glass-panel" id="profileSummaryCard">
+                    <div class="profile-left-meta">
+                        <div class="avatar-circle" id="profileAvatarIcon">👤</div>
+                        <div class="profile-text">
+                            <h4 class="profile-greeting"><span data-i18n="profileActiveTitle">Active Discovery Profile</span>: <span id="summaryOccupation">General Citizen</span></h4>
+                            <div class="profile-chips-row">
+                                <span class="profile-chip"><i class="fa-solid fa-cake-candles"></i> <span id="summaryAge">21 Years</span></span>
+                                <span class="profile-chip"><i class="fa-solid fa-venus-mars"></i> <span id="summaryGender">Male</span></span>
+                                <span class="profile-chip"><i class="fa-solid fa-location-dot"></i> <span id="summaryState">All India</span></span>
+                                <span class="profile-chip"><i class="fa-solid fa-wallet"></i> <span id="summaryIncome">&lt; ₹2.5 Lakh</span></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="profile-actions">
+                        <button class="btn btn-sm btn-outline-primary" onclick="startEligibilityWizard()">
+                            <i class="fa-solid fa-user-pen"></i> <span data-i18n="btnEditProfile">Edit Profile</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Section Title & Results Count -->
+                <div class="results-header-row">
+                    <div>
+                        <h2 class="section-title" data-i18n="recommendedHeading">Your Recommended Schemes</h2>
+                        <p class="section-desc" id="recommendedSubheading">We found 8 schemes matching your profile criteria.</p>
+                    </div>
+
+                    <!-- Search & Filter Controls -->
+                    <div class="search-sort-bar">
+                        <div class="search-box-wrap">
+                            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                            <input type="text" id="schemeSearchInput" class="search-input" placeholder="Search schemes by name, benefit..." oninput="handleSearchInput(event)">
+                            <button class="clear-search-btn" id="clearSearchBtn" onclick="clearSearch()" style="display: none;">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+
+                        <div class="sort-box-wrap">
+                            <label for="schemeSortSelect" class="sort-lbl" data-i18n="sortLbl">Sort:</label>
+                            <select id="schemeSortSelect" class="sort-select" onchange="handleSortChange()">
+                                <option value="bestMatch">Best Match Score</option>
+                                <option value="nameAsc">Scheme Name (A-Z)</option>
+                                <option value="category">Category</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Category Filter Pills -->
+                <div class="filter-pills-row" id="filterPillsContainer">
+                    <button class="filter-pill active" data-cat="All" onclick="filterByCatPill('All')">All</button>
+                    <button class="filter-pill" data-cat="Education" onclick="filterByCatPill('Education')">Education</button>
+                    <button class="filter-pill" data-cat="Agriculture" onclick="filterByCatPill('Agriculture')">Agriculture</button>
+                    <button class="filter-pill" data-cat="Women & Child" onclick="filterByCatPill('Women & Child')">Women</button>
+                    <button class="filter-pill" data-cat="Employment" onclick="filterByCatPill('Employment')">Employment</button>
+                    <button class="filter-pill" data-cat="Business" onclick="filterByCatPill('Business')">Business</button>
+                    <button class="filter-pill" data-cat="Senior Citizens" onclick="filterByCatPill('Senior Citizens')">Senior Citizens</button>
+                    <button class="filter-pill" data-cat="Healthcare" onclick="filterByCatPill('Healthcare')">Healthcare</button>
+                    <button class="filter-pill" data-cat="Housing" onclick="filterByCatPill('Housing')">Housing</button>
+                    <button class="filter-pill" data-cat="Disability Support" onclick="filterByCatPill('Disability Support')">Disability</button>
+                    <button class="filter-pill" data-cat="Skill Development" onclick="filterByCatPill('Skill Development')">Skills</button>
+                </div>
+
+                <!-- Schemes Results Grid -->
+                <div class="schemes-cards-grid" id="schemesGridContainer">
+                    <!-- Dynamic Scheme Cards Rendered via JS -->
+                </div>
+
+                <!-- Polished Empty State for Recommendations / Search -->
+                <div class="empty-state-card glass-panel" id="schemesEmptyState" style="display: none;">
+                    <div class="empty-icon-wrap">
+                        <i class="fa-solid fa-filter-circle-xmark"></i>
+                    </div>
+                    <h3 class="empty-title" data-i18n="emptySchemesTitle">No Matching Schemes Found</h3>
+                    <p class="empty-desc" data-i18n="emptySchemesDesc">Try loosening your search keywords, switching categories, or editing your profile details.</p>
+                    <div class="empty-actions">
+                        <button class="btn btn-secondary" onclick="resetFilters()">
+                            <i class="fa-solid fa-arrows-rotate"></i> <span data-i18n="btnResetFilters">Reset Filters</span>
+                        </button>
+                        <button class="btn btn-primary" onclick="startEligibilityWizard()">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> <span data-i18n="btnRetakeWizard">Update Profile</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION 5: SAVED SCHEMES -->
+        <section class="saved-schemes-section spa-section" id="savedSection">
+            <div class="container">
+                <div class="section-header">
+                    <div class="section-subtitle-tag" data-i18n="savedTag">Bookmarked Benefits</div>
+                    <h2 class="section-title" data-i18n="savedHeading">Saved Schemes</h2>
+                    <p class="section-desc" data-i18n="savedDesc">Quickly access schemes you have shortlisted for application or reference.</p>
+                </div>
+
+                <!-- Saved Schemes Grid -->
+                <div class="schemes-cards-grid" id="savedSchemesContainer">
+                    <!-- Populated dynamically via JS -->
+                </div>
+
+                <!-- Empty State for Saved Schemes -->
+                <div class="empty-state-card glass-panel" id="savedEmptyState">
+                    <div class="empty-icon-wrap heart-empty">
+                        <i class="fa-regular fa-heart"></i>
+                    </div>
+                    <h3 class="empty-title" data-i18n="savedEmptyTitle">No Saved Schemes Yet</h3>
+                    <p class="empty-desc" data-i18n="savedEmptyDesc">Explore recommended schemes and click the heart icon to save benefits you want to apply for later.</p>
+                    <button class="btn btn-primary" onclick="navigateTo('recommendations')">
+                        <i class="fa-solid fa-sparkles"></i> <span data-i18n="btnExploreRecommendations">Explore Schemes</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 6: APPLICATION TRACKER -->
+        <section class="tracker-section spa-section" id="trackerSection">
+            <div class="container">
+                <div class="section-header d-flex-between">
+                    <div>
+                        <div class="section-subtitle-tag" data-i18n="trackerTag">Status & Lifecyle Tracker</div>
+                        <h2 class="section-title" data-i18n="trackerHeading">Application Tracker</h2>
+                        <p class="section-desc" data-i18n="trackerDesc">Monitor and organize your scheme application pipeline from documents to final sanction.</p>
+                    </div>
+                    <div class="header-action-wrap">
+                        <button class="btn btn-primary" onclick="openAddToTrackerModal()">
+                            <i class="fa-solid fa-plus"></i> <span data-i18n="btnTrackScheme">Track a Scheme</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tracker Metric Badges -->
+                <div class="tracker-metrics-grid">
+                    <div class="tracker-metric-card">
+                        <div class="tm-icon pending"><i class="fa-solid fa-hourglass-half"></i></div>
+                        <div class="tm-info">
+                            <span class="tm-label">In Progress</span>
+                            <strong class="tm-val" id="trackerInProgressCount">0</strong>
+                        </div>
+                    </div>
+                    <div class="tracker-metric-card">
+                        <div class="tm-icon review"><i class="fa-solid fa-file-signature"></i></div>
+                        <div class="tm-info">
+                            <span class="tm-label">Under Review</span>
+                            <strong class="tm-val" id="trackerUnderReviewCount">0</strong>
+                        </div>
+                    </div>
+                    <div class="tracker-metric-card">
+                        <div class="tm-icon approved"><i class="fa-solid fa-circle-check"></i></div>
+                        <div class="tm-info">
+                            <span class="tm-label">Approved</span>
+                            <strong class="tm-val" id="trackerApprovedCount">0</strong>
+                        </div>
+                    </div>
+                    <div class="tracker-metric-card">
+                        <div class="tm-icon total"><i class="fa-solid fa-folder-open"></i></div>
+                        <div class="tm-info">
+                            <span class="tm-label">Total Tracked</span>
+                            <strong class="tm-val" id="trackerTotalCount">0</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Applications List Container -->
+                <div class="applications-list-wrap" id="applicationsListContainer">
+                    <!-- Dynamic Application Cards with Interactive Pipeline Bar -->
+                </div>
+
+                <!-- Empty State for Application Tracker -->
+                <div class="empty-state-card glass-panel" id="trackerEmptyState">
+                    <div class="empty-icon-wrap">
+                        <i class="fa-solid fa-clipboard-list"></i>
+                    </div>
+                    <h3 class="empty-title" data-i18n="trackerEmptyTitle">No Applications Tracked Yet</h3>
+                    <p class="empty-desc" data-i18n="trackerEmptyDesc">Start tracking a scheme to record your application reference number, document readiness, and approval progress.</p>
+                    <button class="btn btn-primary" onclick="openAddToTrackerModal()">
+                        <i class="fa-solid fa-plus"></i> <span data-i18n="btnAddFirstApp">Add First Scheme to Tracker</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 7: USER DASHBOARD -->
+        <section class="dashboard-section spa-section" id="dashboardSection">
+            <div class="container">
+                <!-- Welcome Banner -->
+                <div class="dashboard-welcome-banner glass-panel">
+                    <div class="dw-left">
+                        <h2 class="dw-title"><span data-i18n="dashWelcome">Welcome back</span> 👋</h2>
+                        <p class="dw-desc" data-i18n="dashWelcomeDesc">Here is a centralized summary of your personalized schemes, applications, and latest government updates.</p>
+                        
+                        <div class="dw-profile-summary">
+                            <span class="dw-chip"><i class="fa-solid fa-user"></i> <span id="dashUserOcc">Student</span></span>
+                            <span class="dw-chip"><i class="fa-solid fa-calendar"></i> <span id="dashUserAge">21 yrs</span></span>
+                            <span class="dw-chip"><i class="fa-solid fa-map-pin"></i> <span id="dashUserState">Maharashtra</span></span>
+                            <span class="dw-chip"><i class="fa-solid fa-coins"></i> <span id="dashUserIncome">&lt; ₹2.5L</span></span>
+                        </div>
+                    </div>
+
+                    <div class="dw-right">
+                        <button class="btn btn-secondary" onclick="startEligibilityWizard()">
+                            <i class="fa-solid fa-sliders"></i> <span data-i18n="btnUpdateProfile">Update Profile</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Dashboard 4 Key Stat Cards -->
+                <div class="dash-stats-grid">
+                    <div class="dash-stat-box" onclick="navigateTo('saved')">
+                        <div class="dsb-icon icon-red"><i class="fa-solid fa-heart"></i></div>
+                        <div class="dsb-data">
+                            <strong class="dsb-num" id="dashSavedCount">0</strong>
+                            <span class="dsb-lbl" data-i18n="dashStatSaved">Saved Schemes</span>
+                        </div>
+                        <div class="dsb-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                    </div>
+
+                    <div class="dash-stat-box" onclick="navigateTo('recommendations')">
+                        <div class="dsb-icon icon-blue"><i class="fa-solid fa-sparkles"></i></div>
+                        <div class="dsb-data">
+                            <strong class="dsb-num" id="dashRecommendedCount">8</strong>
+                            <span class="dsb-lbl" data-i18n="dashStatRecommended">Recommended</span>
+                        </div>
+                        <div class="dsb-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                    </div>
+
+                    <div class="dash-stat-box" onclick="navigateTo('tracker')">
+                        <div class="dsb-icon icon-orange"><i class="fa-solid fa-list-check"></i></div>
+                        <div class="dsb-data">
+                            <strong class="dsb-num" id="dashApplicationsCount">0</strong>
+                            <span class="dsb-lbl" data-i18n="dashStatApplications">Applications</span>
+                        </div>
+                        <div class="dsb-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                    </div>
+
+                    <div class="dash-stat-box" onclick="navigateTo('tracker')">
+                        <div class="dsb-icon icon-green"><i class="fa-solid fa-circle-check"></i></div>
+                        <div class="dsb-data">
+                            <strong class="dsb-num" id="dashCompletedCount">0</strong>
+                            <span class="dsb-lbl" data-i18n="dashStatCompleted">Completed</span>
+                        </div>
+                        <div class="dsb-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                    </div>
+                </div>
+
+                <!-- Dashboard 2-Column Widgets Grid -->
+                <div class="dash-widgets-grid">
+                    <!-- Left Widget: Recommended for You -->
+                    <div class="dash-widget glass-panel">
+                        <div class="widget-header">
+                            <h3 class="widget-title"><i class="fa-solid fa-sparkles"></i> <span data-i18n="dashWidgetRecTitle">Recommended For You</span></h3>
+                            <button class="text-btn" onclick="navigateTo('recommendations')" data-i18n="btnViewAll">View all</button>
+                        </div>
+                        <div class="widget-body" id="dashRecList">
+                            <!-- Dynamic Mini Cards -->
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Tracked Applications & Alerts -->
+                    <div class="dash-widgets-stacked">
+                        <!-- Application Tracker Widget -->
+                        <div class="dash-widget glass-panel">
+                            <div class="widget-header">
+                                <h3 class="widget-title"><i class="fa-solid fa-list-check"></i> <span data-i18n="dashWidgetTrackerTitle">Application Tracker</span></h3>
+                                <button class="text-btn" onclick="navigateTo('tracker')" data-i18n="btnManage">Manage</button>
+                            </div>
+                            <div class="widget-body" id="dashTrackerList">
+                                <!-- Dynamic Tracker snippet -->
+                            </div>
+                        </div>
+
+                        <!-- Recent Alerts Widget -->
+                        <div class="dash-widget glass-panel">
+                            <div class="widget-header">
+                                <h3 class="widget-title"><i class="fa-solid fa-bell"></i> <span data-i18n="dashWidgetAlertsTitle">Recent Alerts</span></h3>
+                                <span class="badge-tag live-badge">Live Updates</span>
+                            </div>
+                            <div class="widget-body" id="dashAlertsList">
+                                <!-- Dynamic Alerts snippet -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 8: FAQ SECTION -->
+        <section class="faq-section spa-section" id="faqSection">
+            <div class="container faq-container">
+                <div class="section-header text-center">
+                    <div class="section-subtitle-tag" data-i18n="faqTag">Clarifications & Guidance</div>
+                    <h2 class="section-title" data-i18n="faqTitle">Frequently Asked Questions</h2>
+                    <p class="section-desc" data-i18n="faqDesc">Everything you need to know about discovering, qualifying, and applying for government schemes with Scheme Sathi.</p>
+                </div>
+
+                <div class="faq-accordion" id="faqAccordion">
+                    <div class="faq-item active">
+                        <button class="faq-trigger" onclick="toggleFaq(this)">
+                            <span class="faq-question" data-i18n="faqQ1">What is Scheme Sathi?</span>
+                            <i class="fa-solid fa-plus faq-icon"></i>
+                        </button>
+                        <div class="faq-answer">
+                            <p data-i18n="faqA1">Scheme Sathi is an intelligent, personalized government scheme discovery platform built to help Indian citizens find relevant central and state welfare programs, scholarships, subsidies, and pensions without scouring dozens of separate government portals.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button class="faq-trigger" onclick="toggleFaq(this)">
+                            <span class="faq-question" data-i18n="faqQ2">How does the eligibility checker work?</span>
+                            <i class="fa-solid fa-plus faq-icon"></i>
+                        </button>
+                        <div class="faq-answer">
+                            <p data-i18n="faqA2">Our 5-step wizard captures your verified demographic data—including age, state of residence, occupation, family income bracket, and category. Our client-side algorithm compares your parameters directly against official ministry guidelines in real time.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button class="faq-trigger" onclick="toggleFaq(this)">
+                            <span class="faq-question" data-i18n="faqQ3">How is my match score calculated?</span>
+                            <i class="fa-solid fa-plus faq-icon"></i>
+                        </button>
+                        <div class="faq-answer">
+                            <p data-i18n="faqA3">Every scheme is evaluated on a 100-point scale: Occupation criteria (40 pts), Age criteria (15 pts), Annual Family Income criteria (20 pts), State of residence (15 pts), Gender suitability (5 pts), and Specialized conditions (5 pts). Scores between 80–100% are flagged as 'Excellent Matches'.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button class="faq-trigger" onclick="toggleFaq(this)">
+                            <span class="faq-question" data-i18n="faqQ4">Can I save schemes and track applications?</span>
+                            <i class="fa-solid fa-plus faq-icon"></i>
+                        </button>
+                        <div class="faq-answer">
+                            <p data-i18n="faqA4">Yes! You can bookmark any scheme to your 'Saved Schemes' library. In addition, our 'Application Tracker' allows you to manage workflow statuses from 'Interested' and 'Documents Pending' to 'Under Review' and 'Approved', safely stored in your browser's localStorage.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button class="faq-trigger" onclick="toggleFaq(this)">
+                            <span class="faq-question" data-i18n="faqQ5">Where do I actually submit my application?</span>
+                            <i class="fa-solid fa-plus faq-icon"></i>
+                        </button>
+                        <div class="faq-answer">
+                            <p data-i18n="faqA5">Scheme Sathi provides direct links to authenticated official government portals (such as NSP, PM-KISAN, PMFBY, PMAY, and state scholarship portals) where official applications are submitted. We also provide a document readiness checklist before you apply.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button class="faq-trigger" onclick="toggleFaq(this)">
+                            <span class="faq-question" data-i18n="faqQ6">Is Scheme Sathi completely free?</span>
+                            <i class="fa-solid fa-plus faq-icon"></i>
+                        </button>
+                        <div class="faq-answer">
+                            <p data-i18n="faqA6">Yes, 100% free forever. There are zero fees, no subscription requirements, and no paywalls. It is developed as an educational digital public infrastructure initiative to empower citizens.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 9: ABOUT SECTION -->
+        <section class="about-section spa-section" id="aboutSection">
+            <div class="container">
+                <div class="about-card glass-panel">
+                    <div class="about-grid">
+                        <div class="about-content">
+                            <div class="section-subtitle-tag" data-i18n="aboutTag">Our Vision & Purpose</div>
+                            <h2 class="section-title" data-i18n="aboutTitle">Making Government Schemes Easier To Discover</h2>
+                            <p class="about-p" data-i18n="aboutDesc1">
+                                Scheme Sathi is a student-built engineering project created to bridge the information divide between welfare policies and the everyday citizens who qualify for them.
+                            </p>
+                            <p class="about-p" data-i18n="aboutDesc2">
+                                Every year, thousands of crores in public benefits remain unclaimed simply because citizens are unaware of their eligibility or are intimidated by complex documentation requirements. Scheme Sathi provides a clean, transparent, and user-centric pathway to discovery.
+                            </p>
+
+                            <div class="about-pillars-grid">
+                                <div class="pillar-box">
+                                    <div class="pillar-icon"><i class="fa-solid fa-bullseye"></i></div>
+                                    <h4 data-i18n="pillar1Title">Personalized</h4>
+                                    <p data-i18n="pillar1Desc">Algorithms tailored to individual demographic & economic circumstances.</p>
+                                </div>
+                                <div class="pillar-box">
+                                    <div class="pillar-icon"><i class="fa-solid fa-feather-pointed"></i></div>
+                                    <h4 data-i18n="pillar2Title">Simple</h4>
+                                    <p data-i18n="pillar2Desc">Clean multi-step wizard without bureaucratic legal jargon.</p>
+                                </div>
+                                <div class="pillar-box">
+                                    <div class="pillar-icon"><i class="fa-solid fa-universal-access"></i></div>
+                                    <h4 data-i18n="pillar3Title">Accessible</h4>
+                                    <p data-i18n="pillar3Desc">Supports English, Hindi, and Punjabi with dark & light modes.</p>
+                                </div>
+                                <div class="pillar-box">
+                                    <div class="pillar-icon"><i class="fa-solid fa-gift"></i></div>
+                                    <h4 data-i18n="pillar4Title">100% Free</h4>
+                                    <p data-i18n="pillar4Desc">Non-profit educational public service project.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="about-sidebar">
+                            <div class="project-spec-card">
+                                <h4><i class="fa-solid fa-graduation-cap"></i> Project Specifications</h4>
+                                <ul class="spec-list">
+                                    <li><strong>Project Title:</strong> Scheme Sathi</li>
+                                    <li><strong>Theme:</strong> Digital India & Citizen Empowerment</li>
+                                    <li><strong>Type:</strong> B.Tech Final Year Capstone Project</li>
+                                    <li><strong>Frontend Architecture:</strong> Vanilla JS SPA + CSS3 Design System</li>
+                                    <li><strong>Privacy:</strong> 100% Client-Side Evaluation (Zero Tracking)</li>
+                                    <li><strong>Status:</strong> Production Ready Frontend</li>
+                                </ul>
+                                <div class="spec-quote">
+                                    "The Right Scheme, For The Right Person."
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <div class="container footer-container">
+            <div class="footer-grid">
+                <!-- Col 1: Brand & Tagline -->
+                <div class="footer-col brand-col">
+                    <div class="footer-logo">
+                        <div class="logo-icon-wrap"><i class="fa-solid fa-landmark-dome"></i></div>
+                        <span class="footer-brand-title">Scheme<span class="highlight-saffron">Sathi</span></span>
+                    </div>
+                    <p class="footer-tagline" data-i18n="footerTagline">"The Right Scheme, For The Right Person."</p>
+                    <p class="footer-subtext" data-i18n="footerDesc">
+                        A personalized digital discovery platform empowering students, farmers, women, workers, and entrepreneurs across India.
+                    </p>
+                    <div class="footer-social-icons">
+                        <span class="social-badge"><i class="fa-brands fa-github"></i> Open Project</span>
+                        <span class="social-badge"><i class="fa-solid fa-code"></i> Vanilla JS</span>
+                    </div>
+                </div>
+
+                <!-- Col 2: Navigation Links -->
+                <div class="footer-col">
+                    <h4 class="footer-heading" data-i18n="footerQuickLinks">Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="#home" onclick="navigateTo('home')" data-i18n="navHome">Home</a></li>
+                        <li><a href="#wizard" onclick="navigateTo('wizard')" data-i18n="navFind">Find Schemes</a></li>
+                        <li><a href="#categories" onclick="navigateTo('categories')" data-i18n="navCategories">Categories</a></li>
+                        <li><a href="#dashboard" onclick="navigateTo('dashboard')" data-i18n="navDashboard">Dashboard</a></li>
+                        <li><a href="#saved" onclick="navigateTo('saved')" data-i18n="navSaved">Saved Schemes</a></li>
+                        <li><a href="#tracker" onclick="navigateTo('tracker')" data-i18n="navTracker">Application Tracker</a></li>
+                        <li><a href="#faq" onclick="navigateTo('faq')" data-i18n="helpCenter">FAQ</a></li>
+                        <li><a href="#about" onclick="navigateTo('about')" data-i18n="navAbout">About Us</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 3: Categories -->
+                <div class="footer-col">
+                    <h4 class="footer-heading" data-i18n="footerCategories">Categories</h4>
+                    <ul class="footer-links">
+                        <li><a href="#categories" onclick="filterByCategory('Education')" data-i18n="catEducation">Education & Scholarships</a></li>
+                        <li><a href="#categories" onclick="filterByCategory('Agriculture')" data-i18n="catAgriculture">Agriculture & Farming</a></li>
+                        <li><a href="#categories" onclick="filterByCategory('Business')" data-i18n="catBusiness">Business & MSME</a></li>
+                        <li><a href="#categories" onclick="filterByCategory('Healthcare')" data-i18n="catHealthcare">Healthcare & Insurance</a></li>
+                        <li><a href="#categories" onclick="filterByCategory('Employment')" data-i18n="catEmployment">Employment & Livelihood</a></li>
+                        <li><a href="#categories" onclick="filterByCategory('Women & Child')" data-i18n="catWomen">Women Empowerment</a></li>
+                        <li><a href="#categories" onclick="filterByCategory('Senior Citizens')" data-i18n="catSenior">Senior Citizens & Pensions</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 4: Official Resources & Disclaimer -->
+                <div class="footer-col">
+                    <h4 class="footer-heading" data-i18n="footerOfficialGov">Official Portals</h4>
+                    <ul class="footer-links">
+                        <li><a href="https://scholarships.gov.in" target="_blank" rel="noopener">National Scholarship Portal ↗</a></li>
+                        <li><a href="https://pmkisan.gov.in" target="_blank" rel="noopener">PM-KISAN Samman Nidhi ↗</a></li>
+                        <li><a href="https://pmjay.gov.in" target="_blank" rel="noopener">Ayushman Bharat PM-JAY ↗</a></li>
+                        <li><a href="https://pmay-urban.gov.in" target="_blank" rel="noopener">Pradhan Mantri Awas Yojana ↗</a></li>
+                        <li><a href="https://www.mudra.org.in" target="_blank" rel="noopener">MUDRA Loan Portal ↗</a></li>
+                        <li><a href="https://myscheme.gov.in" target="_blank" rel="noopener">MyScheme Government Portal ↗</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Disclaimer Box -->
+            <div class="footer-disclaimer-box">
+                <i class="fa-solid fa-triangle-exclamation disclaimer-icon"></i>
+                <div class="disclaimer-text">
+                    <strong data-i18n="disclaimerTitle">Educational Project Disclaimer:</strong>
+                    <span data-i18n="footerDisclaimer">
+                        Scheme Sathi is an educational college project. Scheme information is provided for informational purposes only. Users should verify the latest eligibility, benefits and application procedures through official government sources.
+                    </span>
+                </div>
+            </div>
+
+            <!-- Bottom Copyright Bar -->
+            <div class="footer-bottom-bar">
+                <p class="copyright-text">
+                    © 2026 Scheme Sathi. All rights reserved. • B.Tech Engineering Capstone Project.
+                </p>
+                <div class="footer-badge-flag">
+                    <span>Proudly Built For Indian Citizens 🇮🇳</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SCHEME DETAILS MODAL (With Interactive Document Checklist) -->
+    <div class="modal-backdrop" id="schemeModalBackdrop" onclick="closeSchemeModal(event)">
+        <div class="modal-container glass-panel" id="schemeModalContainer" role="dialog" aria-modal="true" aria-labelledby="modalSchemeTitle">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <div class="modal-header-meta">
+                    <span class="category-badge" id="modalCategoryBadge">Education</span>
+                    <span class="match-rating-badge excellent" id="modalMatchBadge">94% Match</span>
+                </div>
+                <button class="modal-close-btn" onclick="closeSchemeModal()" aria-label="Close dialog">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Modal Content Body -->
+            <div class="modal-body" id="modalBodyContent">
+                <h2 class="modal-scheme-title" id="modalSchemeTitle">Scheme Name</h2>
+                <p class="modal-short-desc" id="modalShortDesc">Short description of the scheme.</p>
+
+                <!-- Key Benefit Highlight Banner -->
+                <div class="benefit-highlight-banner">
+                    <div class="bh-icon"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                    <div class="bh-info">
+                        <span class="bh-lbl" data-i18n="keyBenefitLbl">Key Scheme Benefit</span>
+                        <h4 class="bh-val" id="modalBenefitValue">₹20,000 / year + Full Fee Reimbursement</h4>
+                    </div>
+                </div>
+
+                <!-- Match Breakdown Accordion / Alert -->
+                <div class="match-breakdown-card" id="modalMatchBreakdown">
+                    <!-- Populated dynamically via JS -->
+                </div>
+
+                <!-- Tabs: Overview, Benefits, Eligibility, Documents Checklist, How To Apply -->
+                <div class="modal-tabs-nav">
+                    <button class="modal-tab-btn active" data-tab="tabOverview" onclick="switchModalTab('tabOverview')">
+                        <i class="fa-solid fa-circle-info"></i> <span data-i18n="tabOverview">Overview</span>
+                    </button>
+                    <button class="modal-tab-btn" data-tab="tabEligibility" onclick="switchModalTab('tabEligibility')">
+                        <i class="fa-solid fa-user-check"></i> <span data-i18n="tabEligibility">Eligibility</span>
+                    </button>
+                    <button class="modal-tab-btn" data-tab="tabChecklist" onclick="switchModalTab('tabChecklist')">
+                        <i class="fa-solid fa-list-check"></i> <span data-i18n="tabDocuments">Document Checklist</span>
+                    </button>
+                    <button class="modal-tab-btn" data-tab="tabApply" onclick="switchModalTab('tabApply')">
+                        <i class="fa-solid fa-file-signature"></i> <span data-i18n="tabHowToApply">How To Apply</span>
+                    </button>
+                </div>
+
+                <!-- Tab Panels -->
+                <div class="modal-tabs-content">
+                    <!-- Tab 1: Overview -->
+                    <div class="tab-panel active" id="tabOverview">
+                        <h4 class="tab-section-heading" data-i18n="headingOverview">Scheme Overview & Objectives</h4>
+                        <p class="tab-text" id="modalDetailedDesc">Detailed description...</p>
+                        
+                        <div class="scheme-quick-attributes" id="modalQuickAttrs">
+                            <!-- Populated dynamically: Ministry, Department, Level, Deadline -->
+                        </div>
+                    </div>
+
+                    <!-- Tab 2: Eligibility -->
+                    <div class="tab-panel" id="tabEligibility">
+                        <h4 class="tab-section-heading" data-i18n="headingEligibility">Who Can Apply?</h4>
+                        <ul class="custom-bullet-list" id="modalEligibilityList">
+                            <!-- Populated dynamically -->
+                        </ul>
+
+                        <div class="criteria-table-wrap mt-3" id="modalCriteriaTable">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Tab 3: Document Checklist Tool -->
+                    <div class="tab-panel" id="tabChecklist">
+                        <div class="checklist-header">
+                            <div>
+                                <h4 class="tab-section-heading" data-i18n="headingDocs">Documents You May Need</h4>
+                                <p class="tab-text-subtle" data-i18n="subheadingDocs">Check off the documents you have ready. Your progress is saved automatically.</p>
+                            </div>
+                            <div class="checklist-status-badge" id="checklistStatusBadge">
+                                0 / 0 Ready (0%)
+                            </div>
+                        </div>
+
+                        <!-- Progress Bar for Documents -->
+                        <div class="checklist-progress-track">
+                            <div class="checklist-progress-fill" id="checklistProgressFill" style="width: 0%;"></div>
+                        </div>
+
+                        <!-- Interactive Document Checklist Items -->
+                        <div class="checklist-items-list" id="modalChecklistItems">
+                            <!-- Populated dynamically with checkboxes -->
+                        </div>
+                    </div>
+
+                    <!-- Tab 4: How To Apply -->
+                    <div class="tab-panel" id="tabApply">
+                        <h4 class="tab-section-heading" data-i18n="headingApply">Step-by-Step Application Process</h4>
+                        <div class="process-steps-list" id="modalProcessSteps">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Official Source Verification Disclaimer -->
+                <div class="modal-disclaimer-box">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <p data-i18n="modalDisclaimer">
+                        <strong>Official Verification Notice:</strong> Please verify the latest eligibility criteria, dates, and application guidelines directly on the official government portal before final submission.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Modal Action Footer -->
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="modalSaveBtn" onclick="toggleSaveFromModal()">
+                    <i class="fa-regular fa-heart"></i> <span data-i18n="btnSaveScheme">Save Scheme</span>
+                </button>
+                <button class="btn btn-outline-primary" id="modalTrackBtn" onclick="trackFromModal()">
+                    <i class="fa-solid fa-list-check"></i> <span data-i18n="btnTrackScheme">Track Application</span>
+                </button>
+                <a href="#" target="_blank" rel="noopener" class="btn btn-primary" id="modalOfficialLinkBtn">
+                    <span data-i18n="btnApplyOfficial">Apply on Official Website</span> <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADD TO TRACKER MODAL -->
+    <div class="modal-backdrop" id="trackerModalBackdrop" onclick="closeTrackerModal(event)">
+        <div class="modal-container modal-sm glass-panel" id="trackerModalContainer">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fa-solid fa-list-check"></i> Track Scheme Application</h3>
+                <button class="modal-close-btn" onclick="closeTrackerModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleSaveTrackerItem(event)">
+                <div class="modal-body">
+                    <div class="form-group mb-3">
+                        <label class="form-label">Scheme to Track</label>
+                        <select id="trackerSchemeSelect" class="form-control" required>
+                            <!-- Populated with schemes -->
+                        </select>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="form-label">Current Pipeline Status</label>
+                        <select id="trackerStatusSelect" class="form-control" required>
+                            <option value="Interested">Interested</option>
+                            <option value="Documents Pending">Documents Pending</option>
+                            <option value="Applied" selected>Applied</option>
+                            <option value="Under Review">Under Review</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Rejected">Rejected</option>
+                            <option value="Completed">Completed</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="form-label">Application Reference / Ack No. (Optional)</label>
+                        <input type="text" id="trackerRefInput" class="form-control" placeholder="e.g. NSP-2026-98124">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Personal Notes / Reminder</label>
+                        <textarea id="trackerNotesInput" class="form-control" rows="3" placeholder="e.g. Verification pending with college nodal officer by Friday"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeTrackerModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save to Tracker</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATIONS CONTAINER -->
+    <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Core JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
