@@ -1,366 +1,203 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In | Scheme Sathi - Citizen Public Service Portal</title>
-    <meta name="description" content="Sign in to your Scheme Sathi account to access personalized government schemes, eligibility calculator, and application tracker.">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
-
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-
-    <!-- Font Awesome 6.5.1 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-    <!-- Shared Stylesheet -->
-    <link rel="stylesheet" href="style.css">
+    <title>Login - Scheme Sathi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        body {
+            background-color: #f1f5f9;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .auth-card {
+            background: #ffffff;
+            width: 100%;
+            max-width: 400px;
+            padding: 32px 28px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        .brand {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .brand h2 {
+            font-size: 24px;
+            color: #1e293b;
+        }
+        .brand span {
+            color: #ff671f;
+        }
+        .brand p {
+            font-size: 14px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 6px;
+        }
+        input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input:focus {
+            border-color: #2563eb;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background-color: #2563eb;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background 0.2s;
+        }
+        .btn-submit:hover {
+            background-color: #1d4ed8;
+        }
+        .alert {
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-bottom: 16px;
+            display: none;
+        }
+        .alert.error {
+            background-color: #fee2e2;
+            color: #dc2626;
+            display: block;
+        }
+        .alert.success {
+            background-color: #dcfce7;
+            color: #16a34a;
+            display: block;
+        }
+        .switch-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #64748b;
+        }
+        .switch-link a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .switch-link a:hover {
+            text-decoration: underline;
+        }
+        .home-link {
+            display: block;
+            text-align: center;
+            margin-top: 14px;
+            font-size: 13px;
+            color: #94a3b8;
+            text-decoration: none;
+        }
+        .home-link:hover {
+            color: #64748b;
+        }
+    </style>
 </head>
-<body class="auth-page-body">
+<body>
 
-    <!-- Subtle Tricolor Top Stripe -->
-    <div class="tricolor-stripe" aria-hidden="true">
-        <div class="stripe saffron"></div>
-        <div class="stripe white"></div>
-        <div class="stripe green"></div>
+    <div class="auth-card">
+        <div class="brand">
+            <h2>🏛️ Scheme<span>Sathi</span></h2>
+            <p>Sign in to your account</p>
+        </div>
+
+        <div id="alertBox" class="alert"></div>
+
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" placeholder="Enter your email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter your password" required>
+            </div>
+
+            <button type="submit" class="btn-submit">Login</button>
+        </form>
+
+        <div class="switch-link">
+            Don't have an account? <a href="register.html">Register here</a>
+        </div>
+        <a href="index.html" class="home-link">← Back to Portal</a>
     </div>
 
-    <!-- Official Top Micro Bar -->
-    <div class="top-micro-bar">
-        <div class="container top-micro-content">
-            <div class="gov-badge-text">
-                <span class="emblem-dot">✦</span>
-                <span>Digital Public Service Initiative • Direct Citizen Scheme Discovery</span>
-            </div>
-            <div class="top-micro-links">
-                <a href="index.html#about" class="micro-link"><i class="fa-solid fa-shield-halved"></i> <span>Verified Sources</span></a>
-                <a href="index.html#faq" class="micro-link"><i class="fa-solid fa-circle-question"></i> <span>Help & FAQs</span></a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Header Navigation -->
-    <header class="auth-page-header">
-        <div class="auth-header-container">
-            <a href="index.html" class="brand-logo" title="Back to Scheme Sathi Home">
-                <div class="logo-icon-wrap">
-                    <i class="fa-solid fa-landmark-dome"></i>
-                </div>
-                <div class="brand-text-block">
-                    <span class="brand-name">Scheme<span class="highlight-saffron">Sathi</span></span>
-                    <span class="brand-motto">The Right Scheme, For The Right Person.</span>
-                </div>
-            </a>
-            <div class="auth-header-actions">
-                <button class="icon-btn theme-toggle-btn" id="themeToggleBtn" onclick="toggleAuthTheme()" title="Toggle Dark/Light Mode" aria-label="Toggle Theme">
-                    <i class="fa-solid fa-moon" id="authThemeIcon"></i>
-                </button>
-                <a href="index.html" class="btn btn-outline btn-sm">
-                    <i class="fa-solid fa-arrow-left"></i> <span>Back to Portal</span>
-                </a>
-            </div>
-        </div>
-    </header>
-
-    <!-- Main Auth Content -->
-    <main class="auth-page-main">
-        <div class="auth-layout-container">
-            
-            <!-- Left Branding Sidebar -->
-            <div class="auth-branding-sidebar">
-                <div class="auth-sidebar-content">
-                    <span class="auth-sidebar-badge">
-                        <i class="fa-solid fa-shield-check"></i> Citizen Access
-                    </span>
-                    <h2 class="auth-sidebar-title">The Right Scheme,<br>For The Right Person.</h2>
-                    <p class="auth-sidebar-desc">
-                        Connect with over 28+ verified Central and State Government schemes, tailored automatically to your age, occupation, and location.
-                    </p>
-
-                    <ul class="auth-features-list">
-                        <li class="auth-feature-item">
-                            <div class="auth-feature-icon">
-                                <i class="fa-solid fa-sparkles"></i>
-                            </div>
-                            <div class="auth-feature-text">
-                                <strong>100-Point Smart Match</strong>
-                                <span>Algorithmic scoring tailored to students, farmers, women, and workers.</span>
-                            </div>
-                        </li>
-                        <li class="auth-feature-item">
-                            <div class="auth-feature-icon">
-                                <i class="fa-solid fa-lock"></i>
-                            </div>
-                            <div class="auth-feature-text">
-                                <strong>100% Local Storage Privacy</strong>
-                                <span>All profile information is stored safely on your browser with zero external tracking.</span>
-                            </div>
-                        </li>
-                        <li class="auth-feature-item">
-                            <div class="auth-feature-icon">
-                                <i class="fa-solid fa-list-check"></i>
-                            </div>
-                            <div class="auth-feature-text">
-                                <strong>Application & Document Tracker</strong>
-                                <span>Monitor status from Interest to Approval with document checklists.</span>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="auth-sidebar-footer">
-                    <span>© 2026 Scheme Sathi</span>
-                    <span>Built with pride for Indian Citizens 🇮🇳</span>
-                </div>
-            </div>
-
-            <!-- Right Form Card -->
-            <div class="auth-form-card">
-                
-                <!-- Nav Tabs for Auth Pages -->
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div class="auth-tabs-nav">
-                        <a href="login.html" class="auth-tab-btn active">
-                            <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In
-                        </a>
-                        <a href="register.html" class="auth-tab-btn">
-                            <i class="fa-solid fa-user-plus"></i> Register
-                        </a>
-                    </div>
-                </div>
-
-                <div class="auth-form-header">
-                    <h1>Citizen Sign In</h1>
-                    <p>Enter your credentials to access your personalized schemes and dashboard.</p>
-                </div>
-
-                <!-- Active Session Card (shown if already logged in) -->
-                <div class="active-session-card" id="activeSessionCard" style="display: none;">
-                    <div class="active-session-user">
-                        <div class="active-session-avatar" id="activeSessionAvatar">U</div>
-                        <div class="active-session-details">
-                            <h4 id="activeSessionName">Logged In User</h4>
-                            <span id="activeSessionRole">Citizen</span>
-                        </div>
-                    </div>
-                    <div class="active-session-actions">
-                        <a href="index.html#dashboard" class="btn btn-primary btn-sm">
-                            <i class="fa-solid fa-gauge"></i> Dashboard
-                        </a>
-                        <button type="button" class="btn btn-outline btn-sm text-danger" onclick="handleSignOutClick()">
-                            Sign Out
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Quick 1-Click Demo Accounts Box -->
-                <div class="demo-accounts-box">
-                    <span class="demo-box-lbl"><i class="fa-solid fa-bolt"></i> 1-Click Quick Demo Login (Academic Evaluation)</span>
-                    <div class="demo-accounts-pills">
-                        <button type="button" class="demo-pill" onclick="quickFillAndLogin('citizen')">
-                            <i class="fa-solid fa-graduation-cap"></i> Student (Aarav)
-                        </button>
-                        <button type="button" class="demo-pill" onclick="quickFillAndLogin('farmer')">
-                            <i class="fa-solid fa-wheat-awn"></i> Farmer (Rajinder)
-                        </button>
-                        <button type="button" class="demo-pill" onclick="quickFillAndLogin('admin')">
-                            <i class="fa-solid fa-shield"></i> Admin (Seva Kendra)
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Alert Box -->
-                <div class="auth-alert" id="authAlertBox" style="display: none;"></div>
-
-                <!-- Login Form -->
-                <form id="pageLoginForm" onsubmit="handleLoginPageSubmit(event)" novalidate>
-                    <div class="form-field-group">
-                        <label for="loginEmailInput" class="form-label">
-                            Email Address <span class="req">*</span>
-                        </label>
-                        <div class="input-with-icon-wrap">
-                            <input type="email" id="loginEmailInput" class="form-control" placeholder="citizen@example.com" required autocomplete="email">
-                            <i class="fa-solid fa-envelope input-leading-icon"></i>
-                        </div>
-                    </div>
-
-                    <div class="form-field-group">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <label for="loginPasswordInput" class="form-label mb-0">
-                                Password <span class="req">*</span>
-                            </label>
-                            <span style="font-size: 0.78rem; color: var(--primary-600); cursor: pointer;" title="For demo accounts use: User@123 or Farmer@123">Demo Passwords</span>
-                        </div>
-                        <div class="password-input-wrap input-with-icon-wrap">
-                            <input type="password" id="loginPasswordInput" class="form-control" placeholder="Enter your password" required autocomplete="current-password">
-                            <i class="fa-solid fa-lock input-leading-icon"></i>
-                            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('loginPasswordInput', this)" aria-label="Toggle Password Visibility">
-                                <i class="fa-solid fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
-                        <label class="auth-check-label">
-                            <input type="checkbox" id="rememberMeCheck" checked>
-                            <span>Remember this device</span>
-                        </label>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary w-100 btn-lg shadow-lift" id="loginSubmitBtn">
-                        <i class="fa-solid fa-arrow-right-to-bracket"></i> <span>Sign In to Portal</span>
-                    </button>
-                </form>
-
-                <div class="auth-privacy-notice">
-                    <i class="fa-solid fa-shield-check"></i>
-                    <span>All credentials and profiles are safely verified and stored locally in your browser's <code>localStorage</code>.</span>
-                </div>
-
-                <div class="auth-section-divider">
-                    <span>New Citizen?</span>
-                </div>
-
-                <div class="text-center">
-                    <p class="auth-switch-text mb-0">
-                        Don't have an account yet? 
-                        <a href="register.html" class="text-primary font-weight-bold">
-                            <strong>Register Citizen Account</strong> <i class="fa-solid fa-arrow-right"></i>
-                        </a>
-                    </p>
-                </div>
-
-            </div>
-
-        </div>
-    </main>
-
-    <!-- Footer -->
-    <footer class="auth-page-footer">
-        <div class="container">
-            <p class="mb-0">
-                Scheme Sathi • B.Tech Capstone Project • 100% Client-Side Pure Web Application • 
-                <a href="index.html" class="text-primary">Return to Homepage</a>
-            </p>
-        </div>
-    </footer>
-
-    <!-- Scripts -->
-    <script src="auth.js"></script>
     <script>
-        // Check active session on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            initAuthTheme();
-            checkActiveSession();
-        });
+        function handleLogin(e) {
+            e.preventDefault();
+            const alertBox = document.getElementById('alertBox');
+            const email = document.getElementById('email').value.trim().toLowerCase();
+            const password = document.getElementById('password').value;
 
-        function checkActiveSession() {
-            const activeUser = getActiveCitizen();
-            const sessionCard = document.getElementById('activeSessionCard');
-            if (activeUser && sessionCard) {
-                sessionCard.style.display = 'flex';
-                document.getElementById('activeSessionAvatar').textContent = getCitizenInitials(activeUser.name);
-                document.getElementById('activeSessionAvatar').style.backgroundColor = activeUser.avatarColor || '#2563eb';
-                document.getElementById('activeSessionName').textContent = activeUser.name;
-                document.getElementById('activeSessionRole').textContent = activeUser.role || 'Citizen';
-            }
-        }
+            // Retrieve registered users from localStorage
+            let users = JSON.parse(localStorage.getItem('scheme_sathi_users')) || [];
 
-        function handleSignOutClick() {
-            signOutCitizen();
-        }
-
-        function showAuthAlert(msg, type = 'error') {
-            const box = document.getElementById('authAlertBox');
-            if (!box) return;
-            box.style.display = 'flex';
-            box.className = `auth-alert ${type}`;
-            const icon = type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation';
-            box.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${escapeAuthHtml(msg)}</span>`;
-        }
-
-        function hideAuthAlert() {
-            const box = document.getElementById('authAlertBox');
-            if (box) box.style.display = 'none';
-        }
-
-        function quickFillAndLogin(role) {
-            const emailInput = document.getElementById('loginEmailInput');
-            const passInput = document.getElementById('loginPasswordInput');
-            if (!emailInput || !passInput) return;
-
-            if (role === 'citizen') {
-                emailInput.value = 'citizen@example.com';
-                passInput.value = 'User@123';
-            } else if (role === 'farmer') {
-                emailInput.value = 'farmer@example.com';
-                passInput.value = 'Farmer@123';
-            } else if (role === 'admin') {
-                emailInput.value = 'admin@schemesathi.gov.in';
-                passInput.value = 'Admin@123';
+            // Check if users exist in scheme_sathi_users_db as well (backward compatibility)
+            const usersDb = JSON.parse(localStorage.getItem('scheme_sathi_users_db')) || {};
+            if (usersDb[email]) {
+                users.push(usersDb[email]);
             }
 
-            handleLoginPageSubmit();
-        }
+            // Find matching user
+            const foundUser = users.find(u => u.email.toLowerCase() === email && u.password === password);
 
-        function handleLoginPageSubmit(event) {
-            if (event) event.preventDefault();
-            hideAuthAlert();
-
-            const emailInput = document.getElementById('loginEmailInput');
-            const passInput = document.getElementById('loginPasswordInput');
-            const rememberMe = document.getElementById('rememberMeCheck');
-
-            if (!emailInput || !passInput) return;
-
-            const email = emailInput.value.trim().toLowerCase();
-            const password = passInput.value;
-
-            if (!email || !password) {
-                showAuthAlert('Please enter both your email address and password.');
+            if (!foundUser) {
+                alertBox.className = 'alert error';
+                alertBox.textContent = 'Invalid email or password. Please try again.';
                 return;
             }
 
-            const usersDb = getLocalUsersDb();
-            const user = usersDb[email];
+            // Save active logged-in user in localStorage
+            localStorage.setItem('scheme_sathi_current_user', JSON.stringify({
+                name: foundUser.name,
+                email: foundUser.email,
+                role: foundUser.role || 'Citizen',
+                avatarColor: foundUser.avatarColor || '#2563eb',
+                profile: foundUser.profile || null
+            }));
 
-            if (!user) {
-                showAuthAlert(`No citizen account found for "${email}". Click "Register Citizen Account" below to sign up.`, 'error');
-                return;
-            }
-
-            if (user.password !== password) {
-                showAuthAlert('Incorrect password entered. For demo accounts use: User@123 or Farmer@123.', 'error');
-                return;
-            }
-
-            // Authentication successful
-            const sessionUser = {
-                name: user.name,
-                email: user.email,
-                role: user.role,
-                phone: user.phone || '',
-                avatarColor: user.avatarColor || '#2563eb',
-                profile: user.profile || null,
-                savedSchemeIds: user.savedSchemeIds || []
-            };
-
-            setActiveCitizen(sessionUser);
-
-            const submitBtn = document.getElementById('loginSubmitBtn');
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Signing In...</span>';
-            }
-
-            showAuthAlert(`Welcome back, ${user.name}! Redirecting to your citizen portal...`, 'success');
+            alertBox.className = 'alert success';
+            alertBox.textContent = 'Login successful! Redirecting...';
 
             setTimeout(() => {
-                window.location.href = 'index.html?auth=login#dashboard';
+                window.location.href = 'index.html';
             }, 800);
         }
     </script>
+
 </body>
 </html>
