@@ -2210,11 +2210,16 @@ function renderSavedSchemes() {
 
     const savedSchemes = SCHEMES_DATA.filter(s => APP_STATE.savedSchemeIds.includes(s.id));
 
-    // Update navbar badge
+    // Update navbar & sidebar badges
     const badge = document.getElementById('savedCountBadge');
     if (badge) {
         badge.textContent = savedSchemes.length;
         badge.style.display = savedSchemes.length > 0 ? 'inline-flex' : 'none';
+    }
+    const sideBadge = document.getElementById('sidebarSavedBadge');
+    if (sideBadge) {
+        sideBadge.textContent = savedSchemes.length;
+        sideBadge.style.display = savedSchemes.length > 0 ? 'inline-flex' : 'none';
     }
 
     // Update dashboard saved count
@@ -3029,34 +3034,45 @@ function navigateTo(sectionId) {
         targetEl.scrollIntoView({ behavior: 'smooth' });
     }
 
-    // Update nav active link
-    const links = document.querySelectorAll('.nav-link');
+    // Update nav active link across sidebar items, desktop nav, and mobile drawer
+    const links = document.querySelectorAll('.nav-link, .sidebar-nav-item, .mob-link');
     links.forEach(l => {
         l.classList.toggle('active', l.getAttribute('data-nav') === sectionId);
     });
 
-    closeMobileMenu();
+    closeSidebarDrawer();
 }
 
 function mobileNavigateTo(sectionId) {
     navigateTo(sectionId);
-    closeMobileMenu();
+    closeSidebarDrawer();
 }
 
+function toggleSidebarDrawer() {
+    const sidebar = document.getElementById('appSidebar');
+    const backdrop = document.getElementById('sidebarBackdrop');
+    if (sidebar) sidebar.classList.toggle('open');
+    if (backdrop) backdrop.classList.toggle('open');
+}
+
+function closeSidebarDrawer() {
+    const sidebar = document.getElementById('appSidebar');
+    const backdrop = document.getElementById('sidebarBackdrop');
+    if (sidebar) sidebar.classList.remove('open');
+    if (backdrop) backdrop.classList.remove('open');
+}
+
+// Backward-compatible aliases for legacy calls
 function toggleMobileMenu() {
-    const drawer = document.getElementById('mobileDrawer');
-    const overlay = document.getElementById('mobileOverlay');
-    if (drawer && overlay) {
-        drawer.classList.toggle('open');
-        overlay.classList.toggle('open');
-    }
+    toggleSidebarDrawer();
 }
 
 function closeMobileMenu() {
-    const drawer = document.getElementById('mobileDrawer');
-    const overlay = document.getElementById('mobileOverlay');
-    if (drawer) drawer.classList.remove('open');
-    if (overlay) overlay.classList.remove('open');
+    closeSidebarDrawer();
+}
+
+function closeMobileDrawer() {
+    closeSidebarDrawer();
 }
 
 // ==========================================================================
