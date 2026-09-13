@@ -3778,17 +3778,12 @@ function renderUserAuth() {
             `;
         }
     } else {
-        // Desktop Guest UI - Direct access to dedicated Login & Register pages
+        // Desktop Guest UI - Compact Sign In button
         if (desktopWrapper) {
             desktopWrapper.innerHTML = `
-                <div class="d-flex align-items-center gap-2">
-                    <a href="login.html" class="btn btn-outline btn-auth-trigger shadow-sm" title="Citizen Sign In">
-                        <i class="fa-solid fa-arrow-right-to-bracket"></i> <span>Sign In</span>
-                    </a>
-                    <a href="register.html" class="btn btn-primary btn-auth-reg-nav shadow-sm" title="Create Citizen Account">
-                        <i class="fa-solid fa-user-plus"></i> <span>Register</span>
-                    </a>
-                </div>
+                <a href="login.html" class="btn btn-outline btn-sm btn-auth-trigger shadow-sm" title="Citizen Sign In">
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i> <span>Sign In</span>
+                </a>
             `;
         }
 

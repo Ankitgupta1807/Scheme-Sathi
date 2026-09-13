@@ -296,19 +296,26 @@ h1, h2, h3, h4, h5, h6 {
     transition: all var(--trans-normal);
 }
 
+.navbar-wrapper .container {
+    max-width: 1400px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
 .navbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
     height: 72px;
-    gap: 16px;
+    gap: 12px;
+    width: 100%;
 }
 
 /* Brand Logo */
 .brand-logo {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     flex-shrink: 0;
 }
 .logo-icon-wrap {
@@ -323,6 +330,7 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 1.25rem;
     box-shadow: 0 4px 10px rgba(10, 27, 56, 0.25);
     transition: transform var(--trans-spring);
+    flex-shrink: 0;
 }
 .brand-logo:hover .logo-icon-wrap {
     transform: rotate(-6deg) scale(1.06);
@@ -338,6 +346,7 @@ h1, h2, h3, h4, h5, h6 {
     letter-spacing: -0.5px;
     line-height: 1.1;
     color: var(--text-primary);
+    white-space: nowrap;
 }
 .highlight-saffron {
     color: var(--accent-500);
@@ -347,24 +356,28 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
     color: var(--text-muted);
     letter-spacing: 0.2px;
+    white-space: nowrap;
 }
 
 /* Nav Links */
 .nav-links-wrap {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
+    flex-shrink: 1;
+    min-width: 0;
 }
 .nav-link {
     display: inline-flex;
     align-items: center;
-    gap: 7px;
-    padding: 8px 14px;
+    gap: 6px;
+    padding: 7px 11px;
     border-radius: var(--radius-full);
-    font-size: 0.92rem;
+    font-size: 0.88rem;
     font-weight: 600;
     color: var(--text-secondary);
     position: relative;
+    white-space: nowrap;
     transition: all var(--trans-fast);
 }
 .nav-link i {
@@ -412,11 +425,12 @@ h1, h2, h3, h4, h5, h6 {
 .nav-actions-wrap {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
+    flex-shrink: 0;
 }
 .icon-btn {
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
     border-radius: var(--radius-full);
     border: 1px solid var(--border-light);
     background-color: var(--bg-surface);
@@ -424,8 +438,9 @@ h1, h2, h3, h4, h5, h6 {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.05rem;
+    font-size: 1rem;
     position: relative;
+    flex-shrink: 0;
     transition: all var(--trans-fast);
 }
 .icon-btn:hover {
@@ -454,18 +469,21 @@ h1, h2, h3, h4, h5, h6 {
 /* Language Dropdown */
 .lang-dropdown-wrapper {
     position: relative;
+    flex-shrink: 0;
 }
 .lang-selector-btn {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 7px 12px;
+    gap: 5px;
+    padding: 6px 11px;
     border-radius: var(--radius-full);
     border: 1px solid var(--border-light);
     background-color: var(--bg-surface);
-    font-size: 0.85rem;
+    font-size: 0.84rem;
     font-weight: 700;
     color: var(--text-secondary);
+    white-space: nowrap;
+    flex-shrink: 0;
     transition: all var(--trans-fast);
 }
 .lang-selector-btn:hover {
@@ -1098,9 +1116,9 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--text-muted);
 }
 
-.bubble-1 { top: -20px; left: -25px; }
-.bubble-2 { bottom: 40px; left: -35px; }
-.bubble-3 { top: 60px; right: -25px; }
+.bubble-1 { top: -16px; left: -12px; }
+.bubble-2 { bottom: 32px; left: -16px; }
+.bubble-3 { top: 60px; right: -8px; }
 
 /* Floating Animations */
 @keyframes float1 {
@@ -3482,11 +3500,40 @@ h1, h2, h3, h4, h5, h6 {
 /* --------------------------------------------------------------------------
    21. RESPONSIVE BREAKPOINTS
    -------------------------------------------------------------------------- */
-@media (max-width: 1024px) {
+@media (max-width: 1300px) {
+    .brand-motto {
+        display: none;
+    }
+    .btn-nav-cta {
+        display: none !important;
+    }
+    .nav-link {
+        padding: 6px 8px;
+        font-size: 0.84rem;
+        gap: 4px;
+    }
+    .nav-actions-wrap {
+        gap: 6px;
+    }
+}
+
+@media (max-width: 1100px) {
+    .nav-links-wrap {
+        display: none;
+    }
+    .mobile-menu-btn {
+        display: flex;
+    }
+    .top-micro-bar {
+        display: none;
+    }
+    .btn-nav-cta {
+        display: none !important;
+    }
     .hero-container {
         grid-template-columns: 1fr;
         text-align: center;
-        gap: 60px;
+        gap: 48px;
     }
     .hero-left-content {
         display: flex;
@@ -3511,27 +3558,12 @@ h1, h2, h3, h4, h5, h6 {
     .tracker-metrics-grid {
         grid-template-columns: repeat(2, 1fr);
     }
-    .about-grid {
-        grid-template-columns: 1fr;
-    }
     .footer-grid {
         grid-template-columns: 1fr 1fr;
     }
 }
 
 @media (max-width: 768px) {
-    .nav-links-wrap {
-        display: none;
-    }
-    .mobile-menu-btn {
-        display: flex;
-    }
-    .top-micro-bar {
-        display: none;
-    }
-    .btn-nav-cta {
-        display: none;
-    }
     .hero-title {
         font-size: 2.5rem;
     }
