@@ -80,7 +80,7 @@
                 </a>
             </nav>
 
-            <!-- Navbar Actions: Notifications, Language, Theme, CTA -->
+            <!-- Navbar Actions: Notifications, Theme, Language, Account Menu -->
             <div class="nav-actions-wrap">
                 <!-- Notifications Bell -->
                 <div class="notification-dropdown-wrapper">
@@ -101,6 +101,11 @@
                     </div>
                 </div>
 
+                <!-- Theme Toggle Button -->
+                <button class="icon-btn theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Dark/Light Mode" aria-label="Toggle Theme">
+                    <i class="fa-solid fa-moon" id="themeIcon"></i>
+                </button>
+
                 <!-- Language Switcher -->
                 <div class="lang-dropdown-wrapper">
                     <button class="lang-selector-btn" id="langSelectorBtn" aria-label="Change Language" onclick="toggleLangMenu()">
@@ -115,21 +120,12 @@
                     </div>
                 </div>
 
-                <!-- Theme Toggle Button -->
-                <button class="icon-btn theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Dark/Light Mode" aria-label="Toggle Theme">
-                    <i class="fa-solid fa-moon" id="themeIcon"></i>
-                </button>
+                <div class="nav-divider"></div>
 
                 <!-- User Auth Profile / Login Button -->
                 <div class="user-auth-wrapper" id="userAuthWrapper">
                     <!-- Populated dynamically via JS (Login button or User Profile Dropdown) -->
                 </div>
-
-                <!-- Primary CTA Button -->
-                <button class="btn btn-primary btn-nav-cta" onclick="startEligibilityWizard()">
-                    <i class="fa-solid fa-magnifying-glass-chart"></i>
-                    <span data-i18n="ctaFindMyScheme">Find My Scheme</span>
-                </button>
 
                 <!-- Mobile Hamburger Button -->
                 <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open Navigation Menu" onclick="toggleMobileMenu()">
