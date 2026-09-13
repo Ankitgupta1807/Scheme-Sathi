@@ -20,12 +20,81 @@
 </head>
 <body>
 
-    <!-- Subtle Tricolor Top Stripe -->
-    <div class="tricolor-stripe" aria-hidden="true">
-        <div class="stripe saffron"></div>
-        <div class="stripe white"></div>
-        <div class="stripe green"></div>
-    </div>
+    <!-- Sticky Navigation Bar -->
+    <header class="navbar-wrapper" id="mainNavbar">
+        <!-- Subtle Tricolor Top Stripe -->
+        <div class="tricolor-stripe" aria-hidden="true">
+            <div class="stripe saffron"></div>
+            <div class="stripe white"></div>
+            <div class="stripe green"></div>
+        </div>
+
+        <div class="container navbar">
+            <!-- Brand Logo & Mobile Sidebar Toggle -->
+            <div class="navbar-left-group">
+                <button class="sidebar-toggle-btn" id="sidebarToggleBtn" aria-label="Toggle Navigation Menu" onclick="toggleSidebarDrawer()">
+                    <i class="fa-solid fa-bars" id="sidebarToggleIcon"></i>
+                </button>
+                <a href="#home" class="brand-logo" onclick="navigateTo('home')">
+                    <div class="logo-icon-wrap">
+                        <i class="fa-solid fa-landmark-dome"></i>
+                    </div>
+                    <div class="brand-text-block">
+                        <span class="brand-name">Scheme<span class="highlight-saffron">Sathi</span></span>
+                        <span class="brand-motto" data-i18n="brandTagline">The Right Scheme, For The Right Person.</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Navbar Actions: Notifications, Theme, Language, Account Menu -->
+            <div class="nav-actions-wrap">
+                <!-- Notifications Bell -->
+                <div class="notification-dropdown-wrapper">
+                    <button class="icon-btn" id="notifBellBtn" title="Notifications" aria-label="Notifications" onclick="toggleNotificationPanel()">
+                        <i class="fa-solid fa-bell"></i>
+                        <span class="notif-badge" id="notifBadge">3</span>
+                    </button>
+
+                    <!-- Notifications Dropdown Drawer -->
+                    <div class="notification-panel" id="notifPanel">
+                        <div class="notif-header">
+                            <h4 data-i18n="notifTitle">Notifications & Alerts</h4>
+                            <button class="text-btn" id="clearNotifsBtn" onclick="markAllNotificationsRead()" data-i18n="markAllRead">Mark all read</button>
+                        </div>
+                        <div class="notif-list" id="notifList">
+                            <!-- Dynamic Notifications -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Theme Toggle Button -->
+                <button class="icon-btn theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Dark/Light Mode" aria-label="Toggle Theme">
+                    <i class="fa-solid fa-moon" id="themeIcon"></i>
+                </button>
+
+                <!-- Language Switcher -->
+                <div class="lang-dropdown-wrapper">
+                    <button class="lang-selector-btn" id="langSelectorBtn" aria-label="Change Language" onclick="toggleLangMenu()">
+                        <i class="fa-solid fa-globe"></i>
+                        <span id="currentLangLabel">EN</span>
+                        <i class="fa-solid fa-chevron-down caret-icon"></i>
+                    </button>
+                    <div class="lang-menu" id="langMenu">
+                        <button class="lang-opt active" onclick="setLanguage('en')">English <span>(EN)</span></button>
+                        <button class="lang-opt" onclick="setLanguage('hi')">हिन्दी <span>(HI)</span></button>
+                        <button class="lang-opt" onclick="setLanguage('pa')">ਪੰਜਾਬੀ <span>(PA)</span></button>
+                    </div>
+                </div>
+
+                <div class="nav-divider"></div>
+
+                <!-- User Auth Profile / Login Button -->
+                <div class="user-auth-wrapper" id="userAuthWrapper">
+                    <!-- Populated dynamically via JS (Login button or User Profile Dropdown) -->
+                </div>
+            </div>
+        </div>
+    </header>
 
     <!-- Collapsible Left Sidebar -->
     <aside class="app-sidebar" id="appSidebar" aria-label="Scheme Sathi Navigation">
@@ -93,75 +162,6 @@
 
     <!-- Sidebar Backdrop for Mobile/Tablet Drawer -->
     <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebarDrawer()"></div>
-
-    <!-- Sticky Navigation Bar -->
-    <header class="navbar-wrapper" id="mainNavbar">
-        <div class="container navbar">
-            <!-- Brand Logo & Mobile Sidebar Toggle -->
-            <div class="navbar-left-group">
-                <button class="sidebar-toggle-btn" id="sidebarToggleBtn" aria-label="Toggle Navigation Menu" onclick="toggleSidebarDrawer()">
-                    <i class="fa-solid fa-bars" id="sidebarToggleIcon"></i>
-                </button>
-                <a href="#home" class="brand-logo" onclick="navigateTo('home')">
-                    <div class="logo-icon-wrap">
-                        <i class="fa-solid fa-landmark-dome"></i>
-                    </div>
-                    <div class="brand-text-block">
-                        <span class="brand-name">Scheme<span class="highlight-saffron">Sathi</span></span>
-                        <span class="brand-motto" data-i18n="brandTagline">The Right Scheme, For The Right Person.</span>
-                    </div>
-                </a>
-            </div>
-
-            <!-- Navbar Actions: Notifications, Theme, Language, Account Menu -->
-            <div class="nav-actions-wrap">
-                <!-- Notifications Bell -->
-                <div class="notification-dropdown-wrapper">
-                    <button class="icon-btn" id="notifBellBtn" title="Notifications" aria-label="Notifications" onclick="toggleNotificationPanel()">
-                        <i class="fa-solid fa-bell"></i>
-                        <span class="notif-badge" id="notifBadge">3</span>
-                    </button>
-
-                    <!-- Notifications Dropdown Drawer -->
-                    <div class="notification-panel" id="notifPanel">
-                        <div class="notif-header">
-                            <h4 data-i18n="notifTitle">Notifications & Alerts</h4>
-                            <button class="text-btn" id="clearNotifsBtn" onclick="markAllNotificationsRead()" data-i18n="markAllRead">Mark all read</button>
-                        </div>
-                        <div class="notif-list" id="notifList">
-                            <!-- Dynamic Notifications -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Theme Toggle Button -->
-                <button class="icon-btn theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Dark/Light Mode" aria-label="Toggle Theme">
-                    <i class="fa-solid fa-moon" id="themeIcon"></i>
-                </button>
-
-                <!-- Language Switcher -->
-                <div class="lang-dropdown-wrapper">
-                    <button class="lang-selector-btn" id="langSelectorBtn" aria-label="Change Language" onclick="toggleLangMenu()">
-                        <i class="fa-solid fa-globe"></i>
-                        <span id="currentLangLabel">EN</span>
-                        <i class="fa-solid fa-chevron-down caret-icon"></i>
-                    </button>
-                    <div class="lang-menu" id="langMenu">
-                        <button class="lang-opt active" onclick="setLanguage('en')">English <span>(EN)</span></button>
-                        <button class="lang-opt" onclick="setLanguage('hi')">हिन्दी <span>(HI)</span></button>
-                        <button class="lang-opt" onclick="setLanguage('pa')">ਪੰਜਾਬੀ <span>(PA)</span></button>
-                    </div>
-                </div>
-
-                <div class="nav-divider"></div>
-
-                <!-- User Auth Profile / Login Button -->
-                <div class="user-auth-wrapper" id="userAuthWrapper">
-                    <!-- Populated dynamically via JS (Login button or User Profile Dropdown) -->
-                </div>
-            </div>
-        </div>
-    </header>
 
     <!-- Main Container -->
     <main class="app-main-content">
