@@ -1247,6 +1247,7 @@ const TRANSLATIONS = {
         navDashboard: 'Dashboard',
         navSaved: 'Saved',
         navTracker: 'Tracker',
+        navDocuments: 'My Documents',
         navAbout: 'About Us',
         ctaFindMyScheme: 'Find My Scheme',
         notifTitle: 'Notifications & Alerts',
@@ -1416,6 +1417,7 @@ const TRANSLATIONS = {
         navDashboard: 'डैशबोर्ड',
         navSaved: 'सहेजी गई',
         navTracker: 'ट्रैकर',
+        navDocuments: 'मेरे दस्तावेज़',
         navAbout: 'हमारे बारे में',
         ctaFindMyScheme: 'मेरी योजना खोजें',
         notifTitle: 'सूचनाएं एवं अलर्ट',
@@ -1585,6 +1587,7 @@ const TRANSLATIONS = {
         navDashboard: 'ਡੈਸ਼ਬੋਰਡ',
         navSaved: 'ਸੰਭਾਲੀਆਂ',
         navTracker: 'ਟਰੈਕਰ',
+        navDocuments: 'ਮੇਰੇ ਦਸਤਾਵੇਜ਼',
         navAbout: 'ਸਾਡੇ ਬਾਰੇ',
         ctaFindMyScheme: 'ਮੇਰੀ ਸਕੀਮ ਲੱਭੋ',
         notifTitle: 'ਸੂਚਨਾਵਾਂ ਅਤੇ ਅਲਰਟ',
@@ -1935,7 +1938,12 @@ const APP_STATE = {
     searchQuery: '',
     sortBy: 'bestMatch',
     selectedSchemeForModal: null,
-    activeModalTab: 'tabOverview'
+    activeModalTab: 'tabOverview',
+    userDocuments: [],
+    selectedDocFilter: 'All',
+    docSearchTerm: '',
+    pendingDeleteDocId: null,
+    activePreviewBlobUrl: null
 };
 
 // ==========================================================================
@@ -2456,6 +2464,11 @@ function renderDashboard() {
             </div>
         `).join('');
     }
+
+    // Update Document Vault storage display metrics
+    if (typeof updateVaultStorageDisplay === 'function') {
+        updateVaultStorageDisplay();
+    }
 }
 
 // ==========================================================================
@@ -2578,11 +2591,39 @@ function renderDocumentChecklist(scheme) {
 
     listContainer.innerHTML = scheme.documents.map((doc, idx) => {
         const isChecked = !!savedStates[idx];
+        const matchingDoc = typeof findMatchingVaultDocument === 'function' ? findMatchingVaultDocument(doc) : null;
+        const presetType = typeof inferDocTypeFromRequirement === 'function' ? inferDocTypeFromRequirement(doc) : 'Other Document';
+
+        let vaultBadgeHtml = '';
+        if (matchingDoc) {
+            vaultBadgeHtml = `
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <span class="vault-badge-avail" title="Verified in your local Document Vault">
+                        <i class="fa-solid fa-circle-check"></i> Available in Vault
+                    </span>
+                    <button type="button" class="btn btn-outline btn-sm" style="padding: 2px 7px; font-size: 0.72rem; border-radius: var(--radius-full);" onclick="event.stopPropagation(); openPreviewDocumentModal('${matchingDoc.id}')" title="Preview document">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
+            `;
+        } else {
+            vaultBadgeHtml = `
+                <button type="button" class="vault-btn-add" onclick="event.stopPropagation(); closeSchemeModal(); navigateTo('documents'); openUploadDocumentModal('${presetType}')" title="Upload this required document to your Vault">
+                    <i class="fa-solid fa-plus"></i> Add to Vault
+                </button>
+            `;
+        }
+
         return `
-            <label class="doc-check-item ${isChecked ? 'checked' : ''}" onclick="toggleDocumentItem('${scheme.id}', ${idx})">
-                <input type="checkbox" class="doc-checkbox" ${isChecked ? 'checked' : ''} onchange="event.stopPropagation()">
-                <span class="doc-name">${escapeHtml(doc)}</span>
-            </label>
+            <div class="doc-check-item ${isChecked ? 'checked' : ''}" style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+                <label style="display:flex; align-items:center; gap:10px; cursor:pointer; flex:1; min-width:0; margin:0;" onclick="toggleDocumentItem('${scheme.id}', ${idx})">
+                    <input type="checkbox" class="doc-checkbox" ${isChecked ? 'checked' : ''} onchange="event.stopPropagation()">
+                    <span class="doc-name">${escapeHtml(doc)}</span>
+                </label>
+                <div style="flex-shrink:0;">
+                    ${vaultBadgeHtml}
+                </div>
+            </div>
         `;
     }).join('');
 
@@ -3024,6 +3065,7 @@ function navigateTo(sectionId) {
         'dashboard': 'dashboardSection',
         'saved': 'savedSection',
         'tracker': 'trackerSection',
+        'documents': 'documentsSection',
         'faq': 'faqSection'
     };
 
@@ -3032,6 +3074,10 @@ function navigateTo(sectionId) {
 
     if (targetEl) {
         targetEl.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    if (sectionId === 'documents') {
+        loadAndRenderDocuments();
     }
 
     // Update nav active link across sidebar items, desktop nav, and mobile drawer
@@ -3756,6 +3802,9 @@ function renderUserAuth() {
                             <button type="button" class="dropdown-item-btn" onclick="navigateTo('tracker'); closeUserProfileDropdown();">
                                 <i class="fa-solid fa-list-check"></i> <span>My Applications (${APP_STATE.trackerApplications.length})</span>
                             </button>
+                            <button type="button" class="dropdown-item-btn" onclick="navigateTo('documents'); closeUserProfileDropdown();">
+                                <i class="fa-solid fa-folder-open"></i> <span>My Documents (${APP_STATE.userDocuments ? APP_STATE.userDocuments.length : 0})</span>
+                            </button>
                             <div class="dropdown-divider"></div>
                             <a href="login.html" class="dropdown-item-btn" style="text-decoration: none;">
                                 <i class="fa-solid fa-users-gear"></i> <span>Switch Account / Sign In Page</span>
@@ -3820,6 +3869,739 @@ function renderUserAuth() {
 }
 
 // ==========================================================================
+// 16b. DOCUMENT VAULT & INDEXEDDB LOCAL STORAGE ENGINE
+// ==========================================================================
+
+const DB_CONFIG = {
+    name: 'SchemeSathiDB',
+    version: 1,
+    storeName: 'documents'
+};
+
+const DOCUMENT_CATEGORIES = [
+    'Aadhaar Card',
+    'PAN Card',
+    'Domicile Certificate',
+    'Caste Certificate',
+    'Income Certificate',
+    'Residence Certificate',
+    'Marksheet',
+    'Disability Certificate',
+    'Bank Passbook',
+    'Other Document'
+];
+
+let stagedUploadFile = null;
+
+/**
+ * Initializes and opens the IndexedDB database instance
+ * Returns a Promise resolving to the IDBDatabase object
+ */
+function initDB() {
+    return new Promise((resolve, reject) => {
+        if (!window.indexedDB) {
+            console.error('IndexedDB is not supported in this browser.');
+            reject(new Error('IndexedDB is not supported in this browser.'));
+            return;
+        }
+
+        const request = window.indexedDB.open(DB_CONFIG.name, DB_CONFIG.version);
+
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains(DB_CONFIG.storeName)) {
+                const objectStore = db.createObjectStore(DB_CONFIG.storeName, { keyPath: 'id' });
+                objectStore.createIndex('type', 'type', { unique: false });
+                objectStore.createIndex('uploadedAt', 'uploadedAt', { unique: false });
+            }
+        };
+
+        request.onsuccess = (event) => {
+            resolve(event.target.result);
+        };
+
+        request.onerror = (event) => {
+            console.error('IndexedDB error:', event.target.error);
+            reject(event.target.error);
+        };
+    });
+}
+
+/**
+ * Saves or updates a document in IndexedDB
+ * @param {Object} docData - { id, name, type, description, file, fileType, fileSize, uploadedAt }
+ */
+function saveDocument(docData) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const db = await initDB();
+            const tx = db.transaction(DB_CONFIG.storeName, 'readwrite');
+            const store = tx.objectStore(DB_CONFIG.storeName);
+            const request = store.put(docData);
+
+            request.onsuccess = () => resolve(docData);
+            request.onerror = (e) => reject(e.target.error);
+        } catch (err) {
+            reject(err);
+        }
+    });
+}
+
+/**
+ * Retrieves all documents stored in IndexedDB
+ */
+function getAllDocuments() {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const db = await initDB();
+            const tx = db.transaction(DB_CONFIG.storeName, 'readonly');
+            const store = tx.objectStore(DB_CONFIG.storeName);
+            const request = store.getAll();
+
+            request.onsuccess = () => resolve(request.result || []);
+            request.onerror = (e) => reject(e.target.error);
+        } catch (err) {
+            console.error('Failed to get all documents from IndexedDB:', err);
+            resolve([]);
+        }
+    });
+}
+
+/**
+ * Retrieves a single document by ID from IndexedDB
+ */
+function getDocument(id) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const db = await initDB();
+            const tx = db.transaction(DB_CONFIG.storeName, 'readonly');
+            const store = tx.objectStore(DB_CONFIG.storeName);
+            const request = store.get(id);
+
+            request.onsuccess = () => resolve(request.result || null);
+            request.onerror = (e) => reject(e.target.error);
+        } catch (err) {
+            reject(err);
+        }
+    });
+}
+
+/**
+ * Deletes a document by ID from IndexedDB
+ */
+function deleteDocument(id) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const db = await initDB();
+            const tx = db.transaction(DB_CONFIG.storeName, 'readwrite');
+            const store = tx.objectStore(DB_CONFIG.storeName);
+            const request = store.delete(id);
+
+            request.onsuccess = () => resolve(true);
+            request.onerror = (e) => reject(e.target.error);
+        } catch (err) {
+            reject(err);
+        }
+    });
+}
+
+/**
+ * Initiates download of a stored document
+ */
+async function downloadDocument(id) {
+    try {
+        const doc = await getDocument(id);
+        if (!doc || !doc.file) {
+            showToast('Document file not found for download.', 'error');
+            return;
+        }
+
+        const url = URL.createObjectURL(doc.file);
+        const a = document.createElement('a');
+        a.href = url;
+
+        // Ensure extension exists
+        let filename = doc.name;
+        const ext = doc.fileType === 'application/pdf' ? '.pdf' : (doc.fileType === 'image/png' ? '.png' : '.jpg');
+        if (!filename.toLowerCase().endsWith('.pdf') && !filename.toLowerCase().endsWith('.jpg') && !filename.toLowerCase().endsWith('.jpeg') && !filename.toLowerCase().endsWith('.png')) {
+            filename += ext;
+        }
+
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 1500);
+
+        showToast(`Downloading "${doc.name}"...`, 'info');
+    } catch (err) {
+        console.error('Download error:', err);
+        showToast('Failed to download document.', 'error');
+    }
+}
+
+/**
+ * Formats bytes into human readable string (KB, MB)
+ */
+function formatFileSize(bytes) {
+    if (!bytes || isNaN(bytes) || bytes === 0) return '0 KB';
+    const k = 1024;
+    if (bytes < k) return bytes + ' B';
+    if (bytes < k * k) return (bytes / k).toFixed(1) + ' KB';
+    return (bytes / (k * k)).toFixed(1) + ' MB';
+}
+
+/**
+ * Formats ISO date string into readable date (e.g. 13 Sep 2026)
+ */
+function formatDocDate(isoStr) {
+    if (!isoStr) return 'Recently';
+    try {
+        const d = new Date(isoStr);
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+    } catch (e) {
+        return 'Recently';
+    }
+}
+
+/**
+ * Infers document category from scheme requirement description
+ */
+function inferDocTypeFromRequirement(requirementName) {
+    const lower = (requirementName || '').toLowerCase();
+    if (lower.includes('aadhaar') || lower.includes('aadhar') || lower.includes('uid')) return 'Aadhaar Card';
+    if (lower.includes('pan card') || lower.includes('pan ')) return 'PAN Card';
+    if (lower.includes('income') || lower.includes('salary') || lower.includes('itr') || lower.includes('form 16')) return 'Income Certificate';
+    if (lower.includes('caste') || lower.includes('community') || lower.includes('sc/st') || lower.includes('obc') || lower.includes('tribal')) return 'Caste Certificate';
+    if (lower.includes('domicile') || lower.includes('bonafide') || lower.includes('nativity')) return 'Domicile Certificate';
+    if (lower.includes('residence') || lower.includes('address proof') || lower.includes('electricity bill') || lower.includes('ration')) return 'Residence Certificate';
+    if (lower.includes('marksheet') || lower.includes('degree') || lower.includes('diploma') || lower.includes('10th') || lower.includes('12th') || lower.includes('academic') || lower.includes('certificate of passing')) return 'Marksheet';
+    if (lower.includes('disability') || lower.includes('pwd') || lower.includes('handicap') || lower.includes('udid')) return 'Disability Certificate';
+    if (lower.includes('bank') || lower.includes('passbook') || lower.includes('account statement') || lower.includes('cancelled cheque')) return 'Bank Passbook';
+    return 'Other Document';
+}
+
+/**
+ * Searches user's Document Vault to check if a required document is already uploaded
+ */
+function findMatchingVaultDocument(requirementName) {
+    if (!APP_STATE.userDocuments || APP_STATE.userDocuments.length === 0) return null;
+    const reqLower = (requirementName || '').toLowerCase().trim();
+    const inferredType = inferDocTypeFromRequirement(reqLower);
+
+    // 1. Direct type match if not 'Other Document'
+    if (inferredType !== 'Other Document') {
+        const typeMatch = APP_STATE.userDocuments.find(d => d.type === inferredType);
+        if (typeMatch) return typeMatch;
+    }
+
+    // 2. Exact or substring name match
+    const nameMatch = APP_STATE.userDocuments.find(d => {
+        const dName = (d.name || '').toLowerCase();
+        return dName.includes(reqLower) || reqLower.includes(dName);
+    });
+    if (nameMatch) return nameMatch;
+
+    // 3. Keyword based matching
+    const keywords = ['aadhaar', 'pan', 'income', 'caste', 'domicile', 'residence', 'marksheet', 'disability', 'bank', 'passbook'];
+    for (const kw of keywords) {
+        if (reqLower.includes(kw)) {
+            const kwMatch = APP_STATE.userDocuments.find(d => {
+                const docText = `${d.name} ${d.type} ${d.description || ''}`.toLowerCase();
+                return docText.includes(kw);
+            });
+            if (kwMatch) return kwMatch;
+        }
+    }
+
+    return null;
+}
+
+/**
+ * Loads documents from IndexedDB and updates all views
+ */
+async function loadAndRenderDocuments() {
+    try {
+        const docs = await getAllDocuments();
+        // Sort descending by upload timestamp
+        APP_STATE.userDocuments = (docs || []).sort((a, b) => new Date(b.uploadedAt || 0) - new Date(a.uploadedAt || 0));
+    } catch (e) {
+        console.error('Error loading documents from IndexedDB:', e);
+        APP_STATE.userDocuments = [];
+    }
+
+    renderDocumentVault();
+    updateVaultStorageDisplay();
+}
+
+/**
+ * Renders the Document Vault grid and filter states
+ */
+function renderDocumentVault() {
+    const grid = document.getElementById('documentsGrid');
+    const emptyState = document.getElementById('documentsEmptyState');
+    if (!grid) return;
+
+    // Filter documents
+    let docs = [...APP_STATE.userDocuments];
+
+    // Category filter
+    if (APP_STATE.selectedDocFilter && APP_STATE.selectedDocFilter !== 'All') {
+        docs = docs.filter(d => d.type === APP_STATE.selectedDocFilter);
+    }
+
+    // Search query filter
+    if (APP_STATE.docSearchTerm) {
+        const term = APP_STATE.docSearchTerm.toLowerCase();
+        docs = docs.filter(d => 
+            (d.name && d.name.toLowerCase().includes(term)) ||
+            (d.type && d.type.toLowerCase().includes(term)) ||
+            (d.description && d.description.toLowerCase().includes(term))
+        );
+    }
+
+    if (docs.length === 0) {
+        grid.innerHTML = '';
+        if (emptyState) emptyState.style.display = 'block';
+        return;
+    }
+
+    if (emptyState) emptyState.style.display = 'none';
+
+    grid.innerHTML = docs.map(doc => {
+        const isPdf = doc.fileType === 'application/pdf' || (doc.name && doc.name.toLowerCase().endsWith('.pdf'));
+        const iconClass = isPdf ? 'fa-solid fa-file-pdf' : 'fa-solid fa-file-image';
+        const typeBadgeClass = isPdf ? 'pdf' : 'image';
+        const descHtml = doc.description ? `<p class="doc-card-desc">${escapeHtml(doc.description)}</p>` : `<p class="doc-card-desc text-muted" style="font-style: italic;">No additional notes added.</p>`;
+
+        return `
+            <div class="doc-card glass-panel" id="doc_card_${doc.id}">
+                <div class="doc-card-top">
+                    <div class="doc-format-icon ${typeBadgeClass}">
+                        <i class="${iconClass}"></i>
+                    </div>
+                    <div class="doc-card-details">
+                        <h4 class="doc-card-title" title="${escapeHtml(doc.name)}">${escapeHtml(doc.name)}</h4>
+                        <span class="doc-card-type">${escapeHtml(doc.type)}</span>
+                    </div>
+                </div>
+                ${descHtml}
+                <div class="doc-card-meta">
+                    <span><i class="fa-solid fa-hard-drive"></i> ${formatFileSize(doc.fileSize)}</span>
+                    <span><i class="fa-regular fa-calendar"></i> ${formatDocDate(doc.uploadedAt)}</span>
+                </div>
+                <div class="doc-card-actions">
+                    <button type="button" class="btn btn-outline btn-sm" onclick="openPreviewDocumentModal('${doc.id}')">
+                        <i class="fa-solid fa-eye"></i> View
+                    </button>
+                    <button type="button" class="btn btn-outline btn-sm" onclick="downloadDocument('${doc.id}')">
+                        <i class="fa-solid fa-download"></i> Download
+                    </button>
+                    <button type="button" class="btn btn-outline btn-delete btn-sm" onclick="confirmDeleteDocument('${doc.id}')" title="Delete document">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+/**
+ * Updates storage counters and badge indicators across the entire UI
+ */
+function updateVaultStorageDisplay() {
+    const docs = APP_STATE.userDocuments || [];
+    const count = docs.length;
+    const totalBytes = docs.reduce((acc, d) => acc + (d.fileSize || 0), 0);
+
+    // Vault header storage text
+    const vaultStorageText = document.getElementById('vaultStorageText');
+    if (vaultStorageText) {
+        vaultStorageText.textContent = `${count} document${count === 1 ? '' : 's'} • ${formatFileSize(totalBytes)} used`;
+    }
+
+    // Sidebar badge
+    const sideBadge = document.getElementById('sidebarDocBadge');
+    if (sideBadge) {
+        sideBadge.textContent = count;
+        sideBadge.style.display = count > 0 ? 'inline-flex' : 'none';
+    }
+
+    // Dashboard widget items
+    const dashCount = document.getElementById('dashDocCount');
+    const dashStorage = document.getElementById('dashDocStorage');
+    if (dashCount) {
+        dashCount.textContent = `${count} document${count === 1 ? '' : 's'} stored`;
+    }
+    if (dashStorage) {
+        dashStorage.textContent = `${formatFileSize(totalBytes)} used • Local IndexedDB`;
+    }
+}
+
+/**
+ * Filters the document vault by category pill
+ */
+function filterDocumentsByCategory(category) {
+    APP_STATE.selectedDocFilter = category;
+
+    // Update active pill UI
+    const pills = document.querySelectorAll('#docFilterPills .doc-pill');
+    pills.forEach(pill => {
+        if (pill.textContent.trim().toLowerCase() === category.toLowerCase() || (category === 'All' && pill.textContent.trim() === 'All')) {
+            pill.classList.add('active');
+        } else {
+            pill.classList.remove('active');
+        }
+    });
+
+    renderDocumentVault();
+}
+
+/**
+ * Handles live search query in document vault
+ */
+function handleDocumentSearch(term) {
+    APP_STATE.docSearchTerm = (term || '').trim();
+    renderDocumentVault();
+}
+
+/**
+ * Opens upload document modal with optional preset type
+ */
+function openUploadDocumentModal(presetType) {
+    stagedUploadFile = null;
+    const modal = document.getElementById('uploadDocModalBackdrop');
+    const form = document.getElementById('uploadDocForm');
+    if (form) form.reset();
+
+    const fileInfo = document.getElementById('dropzoneFileInfo');
+    const title = document.getElementById('dropzoneTitle');
+    const fileInput = document.getElementById('docFileInput');
+    if (fileInput) fileInput.value = '';
+    if (fileInfo) fileInfo.style.display = 'none';
+    if (title) title.style.display = 'block';
+
+    const typeSelect = document.getElementById('docTypeSelect');
+    const nameInput = document.getElementById('docNameInput');
+
+    if (presetType && typeSelect) {
+        typeSelect.value = presetType;
+        if (nameInput) {
+            nameInput.value = `My ${presetType}`;
+        }
+    }
+
+    if (modal) {
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+/**
+ * Closes the upload document modal
+ */
+function closeUploadDocumentModal(event) {
+    if (event && event.target && event.target.id !== 'uploadDocModalBackdrop') return;
+    const modal = document.getElementById('uploadDocModalBackdrop');
+    if (modal) {
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+    stagedUploadFile = null;
+}
+
+/**
+ * Validates and displays selected file in dropzone
+ */
+function handleFileSelected(input) {
+    const file = input.files && input.files[0];
+    if (!file) return;
+
+    // Validate size (max 15MB)
+    const maxSize = 15 * 1024 * 1024;
+    if (file.size > maxSize) {
+        showToast('File is too large. Maximum allowed size is 15MB.', 'error');
+        input.value = '';
+        return;
+    }
+
+    // Validate format
+    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
+    if (!allowedTypes.includes(file.type) && !file.name.match(/\.(pdf|jpe?g|png)$/i)) {
+        showToast('Unsupported file format. Please upload PDF, JPG, JPEG, or PNG.', 'error');
+        input.value = '';
+        return;
+    }
+
+    stagedUploadFile = file;
+
+    // Update dropzone UI
+    const title = document.getElementById('dropzoneTitle');
+    const fileInfo = document.getElementById('dropzoneFileInfo');
+    const dfiName = document.getElementById('dfiName');
+    const dfiSize = document.getElementById('dfiSize');
+
+    if (title) title.style.display = 'none';
+    if (fileInfo) fileInfo.style.display = 'flex';
+    if (dfiName) dfiName.textContent = file.name;
+    if (dfiSize) dfiSize.textContent = formatFileSize(file.size);
+
+    // Auto-populate document name if empty
+    const nameInput = document.getElementById('docNameInput');
+    if (nameInput && !nameInput.value.trim()) {
+        const cleanName = file.name.replace(/\.[^/.]+$/, '');
+        nameInput.value = cleanName;
+    }
+}
+
+/**
+ * Handles document upload form submission and saves to IndexedDB
+ */
+async function handleDocumentUploadSubmit(event) {
+    if (event) event.preventDefault();
+
+    if (!stagedUploadFile) {
+        showToast('Please select or drop a document file first.', 'warning');
+        return;
+    }
+
+    const nameInput = document.getElementById('docNameInput');
+    const typeSelect = document.getElementById('docTypeSelect');
+    const descInput = document.getElementById('docDescInput');
+    const saveBtn = document.getElementById('saveDocBtn');
+
+    const name = nameInput ? nameInput.value.trim() : '';
+    const type = typeSelect ? typeSelect.value : '';
+    const desc = descInput ? descInput.value.trim() : '';
+
+    if (!name || !type) {
+        showToast('Please provide a document name and select its type.', 'warning');
+        return;
+    }
+
+    if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving Locally...`;
+    }
+
+    try {
+        const docRecord = {
+            id: 'doc_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8),
+            name: name,
+            type: type,
+            description: desc,
+            file: stagedUploadFile,
+            fileType: stagedUploadFile.type || 'application/octet-stream',
+            fileSize: stagedUploadFile.size,
+            uploadedAt: new Date().toISOString()
+        };
+
+        await saveDocument(docRecord);
+
+        closeUploadDocumentModal();
+        showToast(`"${docRecord.name}" saved securely in Document Vault!`, 'success');
+
+        // Add notification
+        APP_STATE.notifications.unshift({
+            id: Date.now(),
+            title: `Document Added: ${docRecord.name}`,
+            time: 'Just now',
+            unread: true
+        });
+        renderNotifications();
+
+        await loadAndRenderDocuments();
+
+        // Refresh scheme checklist if details modal is open
+        if (APP_STATE.selectedSchemeForModal) {
+            renderDocumentChecklist(APP_STATE.selectedSchemeForModal);
+        }
+    } catch (err) {
+        console.error('Error saving document to IndexedDB:', err);
+        showToast('Failed to save document. Please try again.', 'error');
+    } finally {
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Save Document`;
+        }
+    }
+}
+
+/**
+ * Opens document preview modal
+ */
+async function openPreviewDocumentModal(id) {
+    try {
+        const doc = await getDocument(id);
+        if (!doc) {
+            showToast('Document not found in vault.', 'error');
+            return;
+        }
+
+        const modal = document.getElementById('previewDocModalBackdrop');
+        const title = document.getElementById('previewDocTitle');
+        const typeBadge = document.getElementById('previewDocTypeBadge');
+        const meta = document.getElementById('previewDocMeta');
+        const body = document.getElementById('previewDocBody');
+        const dlBtn = document.getElementById('previewDownloadBtn');
+
+        if (title) title.textContent = doc.name;
+        if (typeBadge) typeBadge.textContent = doc.type;
+        if (meta) {
+            meta.textContent = `Uploaded: ${formatDocDate(doc.uploadedAt)} • ${formatFileSize(doc.fileSize)} • Stored locally`;
+        }
+
+        if (dlBtn) {
+            dlBtn.onclick = () => downloadDocument(doc.id);
+        }
+
+        // Revoke any previous object URL to prevent memory leaks
+        if (APP_STATE.activePreviewBlobUrl) {
+            URL.revokeObjectURL(APP_STATE.activePreviewBlobUrl);
+            APP_STATE.activePreviewBlobUrl = null;
+        }
+
+        const blobUrl = URL.createObjectURL(doc.file);
+        APP_STATE.activePreviewBlobUrl = blobUrl;
+
+        const isPdf = doc.fileType === 'application/pdf' || (doc.name && doc.name.toLowerCase().endsWith('.pdf'));
+
+        if (body) {
+            if (isPdf) {
+                body.innerHTML = `
+                    <iframe src="${blobUrl}" style="width:100%; height:550px; border:none; border-radius:var(--radius-sm);" title="Document PDF Preview"></iframe>
+                `;
+            } else {
+                body.innerHTML = `
+                    <div style="text-align:center; padding: 20px; max-height: 550px; overflow: auto;">
+                        <img src="${blobUrl}" alt="${escapeHtml(doc.name)}" style="max-width: 100%; max-height: 500px; object-fit: contain; border-radius: var(--radius-sm); box-shadow: var(--shadow-sm);" />
+                    </div>
+                `;
+            }
+        }
+
+        if (modal) {
+            modal.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+    } catch (err) {
+        console.error('Preview error:', err);
+        showToast('Could not preview this document.', 'error');
+    }
+}
+
+/**
+ * Closes preview modal and releases blob URL memory
+ */
+function closePreviewDocumentModal(event) {
+    if (event && event.target && event.target.id !== 'previewDocModalBackdrop') return;
+    const modal = document.getElementById('previewDocModalBackdrop');
+    if (modal) {
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    const body = document.getElementById('previewDocBody');
+    if (body) body.innerHTML = '';
+
+    if (APP_STATE.activePreviewBlobUrl) {
+        URL.revokeObjectURL(APP_STATE.activePreviewBlobUrl);
+        APP_STATE.activePreviewBlobUrl = null;
+    }
+}
+
+/**
+ * Prompts confirmation before deleting a document
+ */
+function confirmDeleteDocument(id) {
+    const doc = APP_STATE.userDocuments.find(d => d.id === id);
+    if (!doc) return;
+
+    APP_STATE.pendingDeleteDocId = id;
+    const targetEl = document.getElementById('deleteDocTargetName');
+    if (targetEl) targetEl.textContent = `${doc.name} (${doc.type})`;
+
+    const modal = document.getElementById('deleteDocModalBackdrop');
+    if (modal) {
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+/**
+ * Closes delete confirmation modal
+ */
+function closeDeleteDocumentModal(event) {
+    if (event && event.target && event.target.id !== 'deleteDocModalBackdrop') return;
+    const modal = document.getElementById('deleteDocModalBackdrop');
+    if (modal) {
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+    APP_STATE.pendingDeleteDocId = null;
+}
+
+/**
+ * Permanently deletes the document from IndexedDB
+ */
+async function executeDeleteDocument() {
+    if (!APP_STATE.pendingDeleteDocId) return;
+    const id = APP_STATE.pendingDeleteDocId;
+
+    try {
+        await deleteDocument(id);
+        closeDeleteDocumentModal();
+        showToast('Document permanently deleted from vault.', 'info');
+        await loadAndRenderDocuments();
+
+        // Refresh scheme checklist if open
+        if (APP_STATE.selectedSchemeForModal) {
+            renderDocumentChecklist(APP_STATE.selectedSchemeForModal);
+        }
+    } catch (err) {
+        console.error('Delete error:', err);
+        showToast('Failed to delete document.', 'error');
+    }
+}
+
+/**
+ * Setup drag and drop events for file dropzone
+ */
+function setupDropzoneEvents() {
+    const dropzone = document.getElementById('docDropzone');
+    if (!dropzone) return;
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.classList.add('dragover');
+        }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.classList.remove('dragover');
+        }, false);
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        if (files && files.length > 0) {
+            const input = document.getElementById('docFileInput');
+            if (input) {
+                input.files = files;
+                handleFileSelected(input);
+            }
+        }
+    }, false);
+}
+
+// ==========================================================================
 // 17. INITIALIZATION & DOM READY
 // ==========================================================================
 
@@ -3871,8 +4653,12 @@ document.addEventListener('DOMContentLoaded', () => {
     renderTracker();
     renderDashboard();
     renderNotifications();
+    loadAndRenderDocuments();
 
-    // 6. Close dropdowns on outside click
+    // 6. Setup Document Vault Dropzone Drag-and-Drop
+    setupDropzoneEvents();
+
+    // 7. Close dropdowns on outside click
     document.addEventListener('click', (e) => {
         const notifBtn = document.getElementById('notifBellBtn');
         const notifPanel = document.getElementById('notifPanel');
@@ -3892,7 +4678,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 7. Check for authentication redirect parameters
+    // 8. Close modals on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeUploadDocumentModal();
+            closePreviewDocumentModal();
+            closeDeleteDocumentModal();
+            closeSchemeModal();
+        }
+    });
+
+    // 9. Check for authentication redirect parameters
     try {
         const urlParams = new URLSearchParams(window.location.search);
         const authStatus = urlParams.get('auth');
