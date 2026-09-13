@@ -3019,8 +3019,7 @@ function navigateTo(sectionId) {
         'dashboard': 'dashboardSection',
         'saved': 'savedSection',
         'tracker': 'trackerSection',
-        'faq': 'faqSection',
-        'about': 'aboutSection'
+        'faq': 'faqSection'
     };
 
     const targetElId = sectionMap[sectionId] || sectionId;
