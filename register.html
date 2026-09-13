@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Citizen Account | Scheme Sathi</title>
+    <meta name="description" content="Register as an Indian citizen on Scheme Sathi to calculate eligibility for government welfare schemes, scholarships, and financial assistance.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome 6.5.1 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Shared Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="auth-page-body">
+
+    <!-- Subtle Tricolor Top Stripe -->
+    <div class="tricolor-stripe" aria-hidden="true">
+        <div class="stripe saffron"></div>
+        <div class="stripe white"></div>
+        <div class="stripe green"></div>
+    </div>
+
+    <!-- Official Top Micro Bar -->
+    <div class="top-micro-bar">
+        <div class="container top-micro-content">
+            <div class="gov-badge-text">
+                <span class="emblem-dot">✦</span>
+                <span>Digital Public Service Initiative • Direct Citizen Scheme Discovery</span>
+            </div>
+            <div class="top-micro-links">
+                <a href="index.html#about" class="micro-link"><i class="fa-solid fa-shield-halved"></i> <span>Verified Sources</span></a>
+                <a href="index.html#faq" class="micro-link"><i class="fa-solid fa-circle-question"></i> <span>Help & FAQs</span></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header Navigation -->
+    <header class="auth-page-header">
+        <div class="auth-header-container">
+            <a href="index.html" class="brand-logo" title="Back to Scheme Sathi Home">
+                <div class="logo-icon-wrap">
+                    <i class="fa-solid fa-landmark-dome"></i>
+                </div>
+                <div class="brand-text-block">
+                    <span class="brand-name">Scheme<span class="highlight-saffron">Sathi</span></span>
+                    <span class="brand-motto">The Right Scheme, For The Right Person.</span>
+                </div>
+            </a>
+            <div class="auth-header-actions">
+                <button class="icon-btn theme-toggle-btn" id="themeToggleBtn" onclick="toggleAuthTheme()" title="Toggle Dark/Light Mode" aria-label="Toggle Theme">
+                    <i class="fa-solid fa-moon" id="authThemeIcon"></i>
+                </button>
+                <a href="login.html" class="btn btn-outline btn-sm">
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i> <span>Sign In</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="auth-page-main">
+        <div class="auth-layout-container wide">
+            
+            <div class="auth-form-card wide-form">
+                
+                <!-- Nav Tabs for Auth Pages -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="auth-tabs-nav">
+                        <a href="login.html" class="auth-tab-btn">
+                            <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In
+                        </a>
+                        <a href="register.html" class="auth-tab-btn active">
+                            <i class="fa-solid fa-user-plus"></i> Register
+                        </a>
+                    </div>
+                    <span class="badge badge-primary">
+                        <i class="fa-solid fa-bolt"></i> Instant AI Matching
+                    </span>
+                </div>
+
+                <div class="auth-form-header">
+                    <h1>Create Citizen Account</h1>
+                    <p>Enter your credentials and demographic details to automatically find eligible central and state government schemes.</p>
+                </div>
+
+                <!-- Alert Box -->
+                <div class="auth-alert" id="regAlertBox" style="display: none;"></div>
+
+                <!-- Success Box (Replaces form upon completion) -->
+                <div class="auth-success-card" id="regSuccessCard" style="display: none;">
+                    <div class="auth-success-icon">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <h2 style="font-family: 'Outfit', sans-serif; font-size: 1.8rem; margin-bottom: 10px;">Citizen Profile Created!</h2>
+                    <p style="color: var(--text-muted); font-size: 1rem; max-width: 500px; margin: 0 auto 24px;">
+                        Welcome to Scheme Sathi, <strong id="successCitizenName" class="text-primary">Citizen</strong>! Your demographic profile has been successfully saved to local storage.
+                    </p>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="index.html#recommendations" class="btn btn-primary btn-lg shadow-lift">
+                            <i class="fa-solid fa-sparkles"></i> View My Eligible Schemes
+                        </a>
+                        <a href="index.html#dashboard" class="btn btn-outline btn-lg">
+                            <i class="fa-solid fa-chart-pie"></i> Open Dashboard
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Registration Form -->
+                <form id="citizenRegisterForm" onsubmit="handleCitizenRegisterSubmit(event)" novalidate>
+                    
+                    <!-- Section 1: Credentials -->
+                    <div class="auth-form-section">
+                        <div class="auth-form-section-title">
+                            <i class="fa-solid fa-user-lock"></i> <span>1. Citizen Account Credentials</span>
+                        </div>
+                        
+                        <div class="form-grid-2">
+                            <div class="form-field-group">
+                                <label for="regFullNameInput" class="form-label">
+                                    Full Name <span class="req">*</span>
+                                </label>
+                                <div class="input-with-icon-wrap">
+                                    <input type="text" id="regFullNameInput" class="form-control" placeholder="e.g. Ramesh Kumar" required>
+                                    <i class="fa-solid fa-user input-leading-icon"></i>
+                                </div>
+                            </div>
+
+                            <div class="form-field-group">
+                                <label for="regEmailInput" class="form-label">
+                                    Email Address <span class="req">*</span>
+                                </label>
+                                <div class="input-with-icon-wrap">
+                                    <input type="email" id="regEmailInput" class="form-control" placeholder="e.g. ramesh@example.com" required>
+                                    <i class="fa-solid fa-envelope input-leading-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-grid-3">
+                            <div class="form-field-group">
+                                <label for="regPhoneInput" class="form-label">
+                                    Mobile Number <small class="text-muted">(Optional)</small>
+                                </label>
+                                <div class="input-with-icon-wrap">
+                                    <input type="tel" id="regPhoneInput" class="form-control" placeholder="10-digit mobile number" maxlength="10">
+                                    <i class="fa-solid fa-phone input-leading-icon"></i>
+                                </div>
+                            </div>
+
+                            <div class="form-field-group">
+                                <label for="regPasswordInput" class="form-label">
+                                    Create Password <span class="req">*</span>
+                                </label>
+                                <div class="password-input-wrap input-with-icon-wrap">
+                                    <input type="password" id="regPasswordInput" class="form-control" placeholder="Min. 6 characters" required oninput="handlePasswordInput(this.value)">
+                                    <i class="fa-solid fa-lock input-leading-icon"></i>
+                                    <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('regPasswordInput', this)" aria-label="Toggle Password Visibility">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="pw-strength-meter">
+                                    <div class="pw-strength-bar">
+                                        <div class="pw-strength-fill" id="pwStrengthFill"></div>
+                                    </div>
+                                    <div class="pw-strength-text">
+                                        <span>Strength</span>
+                                        <span id="pwStrengthLabel">Too short</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-field-group">
+                                <label for="regConfirmPasswordInput" class="form-label">
+                                    Confirm Password <span class="req">*</span>
+                                </label>
+                                <div class="password-input-wrap input-with-icon-wrap">
+                                    <input type="password" id="regConfirmPasswordInput" class="form-control" placeholder="Re-enter password" required>
+                                    <i class="fa-solid fa-lock-check input-leading-icon"></i>
+                                    <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('regConfirmPasswordInput', this)" aria-label="Toggle Password Visibility">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Demographic Profile -->
+                    <div class="auth-form-section">
+                        <div class="auth-form-section-title">
+                            <i class="fa-solid fa-address-card"></i> <span>2. Citizen Demographic Profile (For Eligibility Matching)</span>
+                        </div>
+
+                        <div class="form-grid-3">
+                            <div class="form-field-group">
+                                <label for="regAgeInput" class="form-label">
+                                    Age (Years) <span class="req">*</span>
+                                </label>
+                                <input type="number" id="regAgeInput" class="form-control" placeholder="e.g. 24" min="10" max="100" value="22" required>
+                            </div>
+
+                            <div class="form-field-group">
+                                <label for="regGenderSelect" class="form-label">
+                                    Gender <span class="req">*</span>
+                                </label>
+                                <select id="regGenderSelect" class="form-control" required>
+                                    <option value="Male" selected>Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other / Transgender</option>
+                                </select>
+                            </div>
+
+                            <div class="form-field-group">
+                                <label for="regAreaSelect" class="form-label">
+                                    Area Type <span class="req">*</span>
+                                </label>
+                                <select id="regAreaSelect" class="form-control" required>
+                                    <option value="Rural" selected>Rural (Village/Panchayat)</option>
+                                    <option value="Urban">Urban (City/Town/Municipality)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-grid-2">
+                            <div class="form-field-group">
+                                <label for="regStateSelect" class="form-label">
+                                    Home State / UT <span class="req">*</span>
+                                </label>
+                                <select id="regStateSelect" class="form-control" required>
+                                    <!-- Dynamically filled with all 36 Indian states & UTs -->
+                                </select>
+                            </div>
+
+                            <div class="form-field-group">
+                                <label for="regDistrictInput" class="form-label">
+                                    District
+                                </label>
+                                <input type="text" id="regDistrictInput" class="form-control" placeholder="e.g. Pune, Ludhiana, Patna">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Occupation & Socio-Economic -->
+                    <div class="auth-form-section">
+                        <div class="auth-form-section-title">
+                            <i class="fa-solid fa-briefcase"></i> <span>3. Occupation & Socio-Economic Details</span>
+                        </div>
+
+                        <div class="form-grid-2">
+                            <div class="form-field-group">
+                                <label for="regOccupationSelect" class="form-label">
+                                    Primary Occupation / Status <span class="req">*</span>
+                                </label>
+                                <select id="regOccupationSelect" class="form-control" required onchange="handleOccupationChange(this.value)">
+                                    <option value="Student" selected>Student / Scholar</option>
+                                    <option value="Farmer">Farmer / Agriculture</option>
+                                    <option value="Business Owner">Business Owner / MSME / Trader</option>
+                                    <option value="Self Employed">Self Employed / Artisan</option>
+                                    <option value="Daily Wage Worker">Daily Wage Worker / Laborer</option>
+                                    <option value="Employed (Private)">Employed (Private Sector)</option>
+                                    <option value="Employed (Govt)">Employed (Government Sector)</option>
+                                    <option value="Senior Citizen">Senior Citizen (Retired)</option>
+                                    <option value="Homemaker">Homemaker</option>
+                                    <option value="Unemployed">Unemployed / Job Seeker</option>
+                                </select>
+                            </div>
+
+                            <!-- Conditional Dynamic Sub-field based on occupation -->
+                            <div class="form-field-group" id="conditionalFieldWrapper">
+                                <label for="regDynamicSubField" class="form-label" id="conditionalFieldLabel">
+                                    Current Education Level
+                                </label>
+                                <select id="regDynamicSubField" class="form-control">
+                                    <option value="Undergraduate" selected>Undergraduate Degree (B.Tech, B.Sc, B.Com, BA)</option>
+                                    <option value="Postgraduate">Postgraduate Degree (M.Tech, M.Sc, MBA)</option>
+                                    <option value="12th Pass">Higher Secondary (Class 12th)</option>
+                                    <option value="10th Pass">Secondary (Class 10th)</option>
+                                    <option value="Diploma">Polytechnic / Diploma</option>
+                                    <option value="Doctorate">Doctorate / Ph.D.</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-grid-2">
+                            <div class="form-field-group">
+                                <label for="regIncomeSelect" class="form-label">
+                                    Annual Household Income Bracket <span class="req">*</span>
+                                </label>
+                                <select id="regIncomeSelect" class="form-control" required>
+                                    <option value="<1L">Below ₹1,00,000 (BPL / Antyodaya)</option>
+                                    <option value="1-2.5L" selected>₹1,00,000 – ₹2,50,000</option>
+                                    <option value="2.5-5L">₹2,50,000 – ₹5,00,000</option>
+                                    <option value="5-8L">₹5,00,000 – ₹8,00,000 (Non-Creamy Layer)</option>
+                                    <option value=">8L">Above ₹8,00,000</option>
+                                </select>
+                            </div>
+
+                            <div class="form-field-group">
+                                <label for="regCategorySelect" class="form-label">
+                                    Social Category <span class="req">*</span>
+                                </label>
+                                <select id="regCategorySelect" class="form-control" required>
+                                    <option value="General">General / Open</option>
+                                    <option value="OBC" selected>OBC (Other Backward Classes)</option>
+                                    <option value="SC">SC (Scheduled Caste)</option>
+                                    <option value="ST">ST (Scheduled Tribe)</option>
+                                    <option value="EWS">EWS (Economically Weaker Section)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 4: Special Inclusions -->
+                    <div class="auth-form-section">
+                        <div class="auth-form-section-title">
+                            <i class="fa-solid fa-universal-access"></i> <span>4. Special Inclusions & Concessions</span>
+                        </div>
+
+                        <div class="d-flex flex-column gap-3">
+                            <label class="auth-check-label">
+                                <input type="checkbox" id="regDisabilityCheck">
+                                <div>
+                                    <strong>Person with Disability (Divyangjan / PwD)</strong>
+                                    <div class="text-muted" style="font-size: 0.78rem;">Eligible for disability pensions, assistive devices, and reserved quotas.</div>
+                                </div>
+                            </label>
+
+                            <label class="auth-check-label">
+                                <input type="checkbox" id="regMinorityCheck">
+                                <div>
+                                    <strong>Minority Community Member</strong>
+                                    <div class="text-muted" style="font-size: 0.78rem;">Eligible for National Minorities Development & Finance Corporation schemes.</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Privacy Notice -->
+                    <div class="auth-privacy-notice mb-4">
+                        <i class="fa-solid fa-lock"></i>
+                        <span>
+                            <strong>100% Local Storage Privacy:</strong> Your account credentials and demographic profile are stored strictly in your browser's <code>localStorage</code> on this computer. Zero third-party data tracking.
+                        </span>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-primary btn-lg w-100 shadow-lift" id="regSubmitBtn">
+                        <i class="fa-solid fa-user-plus"></i> <span>Create Citizen Account & Match Schemes</span>
+                    </button>
+                </form>
+
+                <div class="auth-section-divider">
+                    <span>Already Registered?</span>
+                </div>
+
+                <div class="text-center">
+                    <p class="auth-switch-text mb-0">
+                        Already have a citizen account? 
+                        <a href="login.html" class="text-primary font-weight-bold">
+                            <strong>Sign In here</strong> <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="auth-page-footer">
+        <div class="container">
+            <p class="mb-0">
+                Scheme Sathi • B.Tech Capstone Project • 100% Client-Side Pure Web Application • 
+                <a href="index.html" class="text-primary">Return to Homepage</a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initAuthTheme();
+            populateStateDropdown();
+        });
+
+        function populateStateDropdown() {
+            const stateSelect = document.getElementById('regStateSelect');
+            if (!stateSelect) return;
+            stateSelect.innerHTML = '';
+            INDIAN_STATES_LIST.forEach(st => {
+                const opt = document.createElement('option');
+                opt.value = st;
+                opt.textContent = st;
+                if (st === 'Maharashtra') opt.selected = true;
+                stateSelect.appendChild(opt);
+            });
+        }
+
+        function handlePasswordInput(pass) {
+            const strength = calculatePasswordStrength(pass);
+            const fill = document.getElementById('pwStrengthFill');
+            const lbl = document.getElementById('pwStrengthLabel');
+            if (fill && lbl) {
+                fill.style.width = strength.score + '%';
+                fill.style.backgroundColor = strength.color;
+                lbl.textContent = strength.text;
+                lbl.style.color = strength.color;
+            }
+        }
+
+        function handleOccupationChange(occupation) {
+            const labelEl = document.getElementById('conditionalFieldLabel');
+            const selectEl = document.getElementById('regDynamicSubField');
+            if (!labelEl || !selectEl) return;
+
+            selectEl.innerHTML = '';
+
+            if (occupation === 'Farmer') {
+                labelEl.textContent = 'Agricultural Landholding Size';
+                const opts = [
+                    { val: 'Marginal', text: 'Marginal (Less than 1 Hectare / 2.5 Acres)' },
+                    { val: 'Small', text: 'Small (1 to 2 Hectares / 2.5 to 5 Acres)', selected: true },
+                    { val: 'Medium', text: 'Medium (2 to 10 Hectares)' },
+                    { val: 'Large', text: 'Large (More than 10 Hectares)' },
+                    { val: 'Landless', text: 'Landless Agricultural Laborer / Tenant' }
+                ];
+                opts.forEach(o => {
+                    const opt = document.createElement('option');
+                    opt.value = o.val;
+                    opt.textContent = o.text;
+                    if (o.selected) opt.selected = true;
+                    selectEl.appendChild(opt);
+                });
+            } else if (occupation === 'Business Owner' || occupation === 'Self Employed') {
+                labelEl.textContent = 'Enterprise / Business Category';
+                const opts = [
+                    { val: 'Micro', text: 'Micro Enterprise (Investment < ₹1 Cr)', selected: true },
+                    { val: 'Small', text: 'Small Enterprise (Investment < ₹10 Cr)' },
+                    { val: 'Medium', text: 'Medium Enterprise (Investment < ₹50 Cr)' },
+                    { val: 'Street Vendor', text: 'Street Vendor / Nano Business (PM SVANidhi eligible)' }
+                ];
+                opts.forEach(o => {
+                    const opt = document.createElement('option');
+                    opt.value = o.val;
+                    opt.textContent = o.text;
+                    if (o.selected) opt.selected = true;
+                    selectEl.appendChild(opt);
+                });
+            } else {
+                labelEl.textContent = 'Highest Education Level';
+                const opts = [
+                    { val: 'Undergraduate', text: 'Undergraduate Degree (B.Tech, B.Sc, B.Com, BA)', selected: true },
+                    { val: 'Postgraduate', text: 'Postgraduate Degree (M.Tech, M.Sc, MBA)' },
+                    { val: '12th Pass', text: 'Higher Secondary (Class 12th)' },
+                    { val: '10th Pass', text: 'Secondary (Class 10th)' },
+                    { val: 'Diploma', text: 'Polytechnic / Diploma' },
+                    { val: 'Doctorate', text: 'Doctorate / Ph.D.' },
+                    { val: 'Primary', text: 'Primary / Below 10th' }
+                ];
+                opts.forEach(o => {
+                    const opt = document.createElement('option');
+                    opt.value = o.val;
+                    opt.textContent = o.text;
+                    if (o.selected) opt.selected = true;
+                    selectEl.appendChild(opt);
+                });
+            }
+        }
+
+        function showRegAlert(msg, type = 'error') {
+            const box = document.getElementById('regAlertBox');
+            if (!box) return;
+            box.style.display = 'flex';
+            box.className = `auth-alert ${type}`;
+            const icon = type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation';
+            box.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${escapeAuthHtml(msg)}</span>`;
+            box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function hideRegAlert() {
+            const box = document.getElementById('regAlertBox');
+            if (box) box.style.display = 'none';
+        }
+
+        function handleCitizenRegisterSubmit(event) {
+            if (event) event.preventDefault();
+            hideRegAlert();
+
+            const fullName = document.getElementById('regFullNameInput').value.trim();
+            const email = document.getElementById('regEmailInput').value.trim().toLowerCase();
+            const phone = document.getElementById('regPhoneInput').value.trim();
+            const password = document.getElementById('regPasswordInput').value;
+            const confirmPass = document.getElementById('regConfirmPasswordInput').value;
+            const age = parseInt(document.getElementById('regAgeInput').value, 10);
+            const gender = document.getElementById('regGenderSelect').value;
+            const areaType = document.getElementById('regAreaSelect').value;
+            const state = document.getElementById('regStateSelect').value;
+            const district = document.getElementById('regDistrictInput').value.trim();
+            const occupation = document.getElementById('regOccupationSelect').value;
+            const dynamicSubVal = document.getElementById('regDynamicSubField').value;
+            const incomeBracket = document.getElementById('regIncomeSelect').value;
+            const socialCategory = document.getElementById('regCategorySelect').value;
+            const hasDisability = document.getElementById('regDisabilityCheck').checked;
+            const isMinority = document.getElementById('regMinorityCheck').checked;
+
+            // Form Validations
+            if (!fullName || fullName.length < 2) {
+                showRegAlert('Please enter your valid Full Name (at least 2 characters).');
+                return;
+            }
+            if (!email || !email.includes('@') || !email.includes('.')) {
+                showRegAlert('Please enter a valid email address.');
+                return;
+            }
+            if (!password || password.length < 6) {
+                showRegAlert('Password must be at least 6 characters long.');
+                return;
+            }
+            if (password !== confirmPass) {
+                showRegAlert('Password confirmation does not match the created password.');
+                return;
+            }
+            if (isNaN(age) || age < 10 || age > 100) {
+                showRegAlert('Please enter a valid age between 10 and 100.');
+                return;
+            }
+            if (!state) {
+                showRegAlert('Please select your Home State or Union Territory.');
+                return;
+            }
+
+            // Check if email already registered
+            const usersDb = getLocalUsersDb();
+            if (usersDb[email]) {
+                showRegAlert(`An account with the email "${email}" already exists. Please sign in instead.`);
+                return;
+            }
+
+            // Avatar Color
+            const palette = ['#2563eb', '#059669', '#7c3aed', '#d97706', '#db2777', '#0891b2', '#ea580c'];
+            const avatarColor = palette[Math.floor(Math.random() * palette.length)];
+
+            // Create User Record
+            const newUser = {
+                name: fullName,
+                email: email,
+                password: password,
+                phone: phone,
+                role: `Citizen (${occupation})`,
+                avatarColor: avatarColor,
+                profile: {
+                    age: age,
+                    gender: gender,
+                    state: state,
+                    district: district || 'All',
+                    areaType: areaType,
+                    occupation: occupation,
+                    incomeBracket: incomeBracket,
+                    socialCategory: socialCategory,
+                    education: (occupation === 'Student' || !['Farmer', 'Business Owner', 'Self Employed'].includes(occupation)) ? dynamicSubVal : 'Undergraduate',
+                    landHolding: occupation === 'Farmer' ? dynamicSubVal : 'None',
+                    businessType: (occupation === 'Business Owner' || occupation === 'Self Employed') ? dynamicSubVal : 'None',
+                    hasDisability: hasDisability,
+                    isMinority: isMinority
+                },
+                savedSchemeIds: [],
+                registeredAt: new Date().toISOString().split('T')[0]
+            };
+
+            // Save to Local Storage Database
+            usersDb[email] = newUser;
+            saveLocalUsersDb(usersDb);
+
+            // Establish active session
+            const sessionUser = {
+                name: newUser.name,
+                email: newUser.email,
+                role: newUser.role,
+                phone: newUser.phone,
+                avatarColor: newUser.avatarColor,
+                profile: newUser.profile,
+                savedSchemeIds: []
+            };
+            setActiveCitizen(sessionUser);
+
+            // Display Celebration Card
+            document.getElementById('citizenRegisterForm').style.display = 'none';
+            document.getElementById('regSuccessCard').style.display = 'block';
+            document.getElementById('successCitizenName').textContent = newUser.name;
+
+            // Automatically redirect after 2.5 seconds
+            setTimeout(() => {
+                window.location.href = 'index.html?auth=registered#recommendations';
+            }, 2500);
+        }
+    </script>
+</body>
+</html>

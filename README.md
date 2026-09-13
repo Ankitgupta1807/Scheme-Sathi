@@ -39,8 +39,11 @@ The entire application runs **100% directly in the browser** using modern standa
 ```
 scheme-sathi/
 │
-├── index.html       # Semantic HTML5 Single Page Application
-├── style.css        # Premium GovTech / Fintech CSS3 Design System
+├── index.html       # Semantic HTML5 Single Page Application & Citizen Portal
+├── login.html       # Dedicated Citizen Sign In Page (Local Storage Session & 1-Click Demo Logins)
+├── register.html    # Dedicated Citizen Registration Page (Demographic Profiling & Local Storage DB)
+├── auth.js          # Shared Client-Side Authentication Engine & Local Storage Handlers
+├── style.css        # Premium GovTech / Fintech CSS3 Design System & Theme Variables
 ├── script.js        # Vanilla JavaScript Engine (Schemes, Matcher, i18n, Storage)
 ├── assets/          # Assets and icons directory
 └── README.md        # Project documentation

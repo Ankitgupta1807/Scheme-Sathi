@@ -3742,6 +3742,9 @@ function renderUserAuth() {
                                 <i class="fa-solid fa-list-check"></i> <span>My Applications (${APP_STATE.trackerApplications.length})</span>
                             </button>
                             <div class="dropdown-divider"></div>
+                            <a href="login.html" class="dropdown-item-btn" style="text-decoration: none;">
+                                <i class="fa-solid fa-users-gear"></i> <span>Switch Account / Sign In Page</span>
+                            </a>
                             <button type="button" class="dropdown-item-btn text-danger" onclick="logoutUser()">
                                 <i class="fa-solid fa-arrow-right-from-bracket"></i> <span>Sign Out</span>
                             </button>
@@ -3764,28 +3767,43 @@ function renderUserAuth() {
                             <div style="font-size: 0.75rem; color: var(--primary-600); font-weight: 600;">${escapeHtml(user.role || 'Citizen')}</div>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-outline text-danger w-100 btn-sm" onclick="closeMobileDrawer(); logoutUser();">
-                        <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
-                    </button>
+                    <div class="d-flex gap-2 mt-2">
+                        <a href="login.html" class="btn btn-outline w-100 btn-sm text-center">
+                            <i class="fa-solid fa-users-gear"></i> Switch
+                        </a>
+                        <button type="button" class="btn btn-outline text-danger w-100 btn-sm" onclick="closeMobileDrawer(); logoutUser();">
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
+                        </button>
+                    </div>
                 </div>
             `;
         }
     } else {
-        // Desktop Guest UI
+        // Desktop Guest UI - Direct access to dedicated Login & Register pages
         if (desktopWrapper) {
             desktopWrapper.innerHTML = `
-                <button type="button" class="btn btn-outline btn-auth-trigger shadow-sm" onclick="openAuthModal('login')">
-                    <i class="fa-solid fa-arrow-right-to-bracket"></i> <span>Sign In</span>
-                </button>
+                <div class="d-flex align-items-center gap-2">
+                    <a href="login.html" class="btn btn-outline btn-auth-trigger shadow-sm" title="Citizen Sign In">
+                        <i class="fa-solid fa-arrow-right-to-bracket"></i> <span>Sign In</span>
+                    </a>
+                    <a href="register.html" class="btn btn-primary btn-auth-reg-nav shadow-sm" title="Create Citizen Account">
+                        <i class="fa-solid fa-user-plus"></i> <span>Register</span>
+                    </a>
+                </div>
             `;
         }
 
         // Mobile Drawer Guest UI
         if (mobileWrapper) {
             mobileWrapper.innerHTML = `
-                <button type="button" class="btn btn-outline w-100" onclick="closeMobileDrawer(); openAuthModal('login');">
-                    <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In / Register
-                </button>
+                <div class="d-flex flex-column gap-2 w-100">
+                    <a href="login.html" class="btn btn-outline w-100 text-center">
+                        <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In
+                    </a>
+                    <a href="register.html" class="btn btn-primary w-100 text-center">
+                        <i class="fa-solid fa-user-plus"></i> Register Citizen
+                    </a>
+                </div>
             `;
         }
     }
@@ -3863,6 +3881,21 @@ document.addEventListener('DOMContentLoaded', () => {
             profileWrap.classList.remove('open');
         }
     });
+
+    // 7. Check for authentication redirect parameters
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const authStatus = urlParams.get('auth');
+        if (authStatus === 'login' && APP_STATE.currentUser) {
+            showToast(`Welcome back, ${APP_STATE.currentUser.name}! Your personalized schemes are updated.`, 'success');
+            window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+        } else if (authStatus === 'registered' && APP_STATE.currentUser) {
+            showToast(`Registration successful! Welcome to Scheme Sathi, ${APP_STATE.currentUser.name}!`, 'success');
+            window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+        }
+    } catch (e) {
+        console.error('Error checking auth URL params:', e);
+    }
 
     console.log('🏛️ Scheme Sathi initialized successfully. Total Schemes Loaded:', SCHEMES_DATA.length);
 });
